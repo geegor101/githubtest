@@ -1,6 +1,9 @@
+using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Linq;
 using UnityEngine;
+using UnityEngine.EventSystems;
 
 public class TileSpawner : MonoBehaviour
 {
@@ -18,11 +21,18 @@ public class TileSpawner : MonoBehaviour
                  o.name = "Tile " + i + " " + j;
             }
         }
+        //Physics.ra
     }
 
     // Update is called once per frame
     void Update()
     {
+        /*
+        BoxCollider collider;
+        List<RaycastHit> casts = Physics.RaycastAll().ToList<RaycastHit>();
         
+        casts.Sort((hit, raycastHit) => hit.distance < raycastHit.distance ? 0 : 1);
+        //Array.Sort(Physics.RaycastAll(), (hit, raycastHit) => hit.distance < raycastHit.distance ? 0 : 1);
+        */
     }
 }
