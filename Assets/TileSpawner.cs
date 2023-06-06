@@ -2,7 +2,9 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
+using Unity.AI.Navigation;
 using UnityEngine;
+using UnityEngine.AI;
 using UnityEngine.EventSystems;
 
 public class TileSpawner : MonoBehaviour
@@ -12,16 +14,32 @@ public class TileSpawner : MonoBehaviour
     
     void Start()
     {
+        int width = 4, height = 5;
+        
+        List<NavMeshSurface> surfaces = new List<NavMeshSurface>(width * height);
+
         GameObject o;
-        for (int i = 0; i < 8; i++)
+        for (int i = 0; i < width; i++)
         {
-            for (int j = 0; j < 9; j++)
+            for (int j = 0; j < height; j++)
             {
                  o = Instantiate(tile, new Vector3(10 * i, 0, 10 * j), new Quaternion());
                  o.name = "Tile " + i + " " + j;
+                 surfaces.Add(tile.GetComponentInChildren<NavMeshSurface>());
             }
         }
+        
+        
+        surfaces.ForEach(surface =>
+        {
+            
+            //surface.BuildNavMesh();
+            //surface.UpdateNavMesh(surface.navMeshData);
+        });
+        
         //Physics.ra
+        
+        
     }
 
     // Update is called once per frame
