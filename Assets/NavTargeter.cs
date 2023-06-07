@@ -20,9 +20,12 @@ public class NavTargeter : MonoBehaviour
         if (Input.GetMouseButton(1))
         {
             Physics.Raycast(camera.ScreenPointToRay(Input.mousePosition), out var hitInfo);
-            //if (!agent.isOnNavMesh)
+            
+            
             agent.SetDestination(hitInfo.point);
-            //agent.Warp(hitInfo.point);
+            //Use path with max travel dist to find point on line x units away
+            //enable/disable to move between turns
+            
         }
 
         if (Input.GetMouseButton(0))
