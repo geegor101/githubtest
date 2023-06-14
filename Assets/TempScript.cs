@@ -10,7 +10,7 @@ public class TempScript : MonoBehaviour
     
     void Start()
     {
-        //Startup
+        //Startup 
     }
 
     // Update is called once per frame
