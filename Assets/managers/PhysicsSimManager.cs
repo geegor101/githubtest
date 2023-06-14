@@ -3,7 +3,7 @@ using UnityEngine;
 
 namespace managers
 {
-    public class PhysicsSimManager
+    public static class PhysicsSimManager
     {
 
         /*
@@ -13,26 +13,26 @@ namespace managers
             ArticulationBody body;
          */
 
-        public List<Rigidbody> rigidBodies = new List<Rigidbody>();
+        public static List<Rigidbody> rigidBodies = new List<Rigidbody>();
     
     
-        public bool physEnabled { get; private set; } = true;
+        public static bool physEnabled { get; private set; } = true;
     
-        public void EnablePhysics()
+        public static void EnablePhysics()
         {
             if (!physEnabled)
                 rigidBodies.ForEach(rigidbody1 => rigidbody1.constraints = RigidbodyConstraints.None);
             physEnabled = true;
         }
 
-        public void DisablePhysics()
+        public static void DisablePhysics()
         {
             if (physEnabled)
                 rigidBodies.ForEach(rigidbody1 => rigidbody1.constraints = RigidbodyConstraints.FreezeAll);
             physEnabled = false;
         }
 
-        public void AddRigidBody(Rigidbody rigidbody)
+        public static void AddRigidBody(Rigidbody rigidbody)
         {
             rigidBodies.Add(rigidbody);
             rigidbody.constraints = physEnabled ? RigidbodyConstraints.FreezeAll : RigidbodyConstraints.None;

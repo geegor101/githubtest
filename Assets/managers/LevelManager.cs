@@ -1,6 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Numerics;
+using UnityEngine;
 using voxel;
 
 namespace managers
@@ -16,24 +16,26 @@ namespace managers
         public Dictionary<Vector3, VoxelChunk> mainLevel = new Dictionary<Vector3, VoxelChunk>();
         public List<VoxelChunk> floatingChunks = new List<VoxelChunk>();
 
-        public Voxel getVoxelAtPos(Vector3 location)
+        public Voxel GetVoxelAtPos(Vector3 location)
         {
-            Vector3 chunkCoord;
-            Vector3 subChunkCoord;
-            getAdjustedCoordinates(location, out chunkCoord, out subChunkCoord);
+            
+            GetAdjustedCoordinates(location, out Vector3 chunkCoord, out Vector3 subChunkCoord);
             return mainLevel[chunkCoord]._voxels[subChunkCoord];
         }
 
-        public void getAdjustedCoordinates(Vector3 input, out Vector3 chunkCoord, out Vector3 subChunkCoord)
+        public void GetAdjustedCoordinates(Vector3 input, out Vector3 chunkCoord, out Vector3 subChunkCoord)
         {
-            subChunkCoord.X = input.X % VoxelChunk.ChunkSize;
-            chunkCoord.X = (input.X - subChunkCoord.X) / VoxelChunk.ChunkSize;
+            chunkCoord = new Vector3();
+            subChunkCoord = new Vector3();
             
-            subChunkCoord.Y = input.Y % VoxelChunk.ChunkSize;
-            chunkCoord.Y = (input.Y - subChunkCoord.Y) / VoxelChunk.ChunkSize;
-            
-            subChunkCoord.Z = input.Z % VoxelChunk.ChunkSize;
-            chunkCoord.Z = (input.Z - subChunkCoord.Z) / VoxelChunk.ChunkSize;
+            subChunkCoord.x = input.x % VoxelChunk.ChunkSize;
+            chunkCoord.x = (input.x - subChunkCoord.x) / VoxelChunk.ChunkSize;
+
+            subChunkCoord.y = input.y % VoxelChunk.ChunkSize;
+            chunkCoord.y = (input.y - subChunkCoord.y) / VoxelChunk.ChunkSize;
+
+            subChunkCoord.z = input.z % VoxelChunk.ChunkSize;
+            chunkCoord.z = (input.z - subChunkCoord.z) / VoxelChunk.ChunkSize;
         }
     }
 }

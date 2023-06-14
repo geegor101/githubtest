@@ -4,7 +4,7 @@ namespace managers
 {
     public abstract class GeegorAsset
     {
-        public AssetLoc _AssetLoc { get; private set; }
+        public AssetLoc _AssetLoc { get; }
 
         protected GeegorAsset(AssetLoc loc)
         {

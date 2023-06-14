@@ -12,10 +12,15 @@ namespace voxel
     
         //TODO Setup any physical chars here
 
+        public bool Occluder()
+        {
+            return true;
+        }
+
         public WorldMaterial(AssetLoc loc, Material material) : base(loc)
         {
             this.material = material;
-        
+            WorldMaterials[loc] = this;
         }
 
     }
