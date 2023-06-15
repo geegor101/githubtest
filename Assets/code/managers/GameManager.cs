@@ -1,4 +1,5 @@
-﻿using UnityEngine;
+﻿using Steamworks;
+using UnityEngine;
 using voxel;
 
 namespace managers
@@ -15,6 +16,18 @@ namespace managers
             
             var go = new GameObject("Test object!");
             go.AddComponent<VoxelRigidBody>();
+            if (SteamManager.Initialized)
+                TestSteam();
+        }
+
+        private void TestSteam()
+        {
+            //Debug.Log(SteamFriends.GetPersonaName());
+            //Debug.Log( "Friends:" + SteamFriends.GetFriendCount(EFriendFlags.k_EFriendFlagImmediate));
+            //SteamFriends.get
+            //SteamFriends.GetFriendByIndex(1, EFriendFlags.k_EFriendFlagAll)
+                
+            
         }
 
         //Move these to LVLMan
