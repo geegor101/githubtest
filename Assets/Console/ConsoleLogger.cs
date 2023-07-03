@@ -22,15 +22,7 @@ namespace Console
         private TMP_InputField _input;
 
         private static ConsoleLogger _instance;
-        
-        
 
-        [HideInInspector]
-        private static Dictionary<string, ChatCommand> commands = 
-            new Dictionary<string, ChatCommand>();
-
-        private static ChatCommand missingCommand = new ChatCommand();
-        
         #region MONO-B
 
         private void Start()
@@ -80,30 +72,109 @@ namespace Console
         #endregion
 
         #region Call/Add CMDs
+        
+        private static Dictionary<string, ChatCommand> _commands = new Dictionary<string, ChatCommand>();
 
         private static void addDefaultCommands()
         {
-            addCommand("test", (strings, info) => {Debug.Log(strings.ToString());});
+            addCommand("test", (strings, info) => {Debug.Log(strings.ToString());}, true, false);
+            addCommand("start", (strings, info) => {
+                if (strings.Length != 2)
+                {
+                    InvalidArguments(strings, info);
+                    return;
+                }
+                    switch (strings[1])
+                {
+                    case "server" :
+                        Debug.LogWarning("Starting server: ");
+                        InstanceFinder.ServerManager.StartConnection();
+                        break;
+                    case "client" :
+                        Debug.LogWarning("Starting client: ");
+                        InstanceFinder.ClientManager.StartConnection();
+                        break;
+                    case "host" :
+                        Debug.LogWarning("Starting host: ");
+                        InstanceFinder.ServerManager.StartConnection();
+                        InstanceFinder.ClientManager.StartConnection();
+                        
+                        //TODO: REMOVE
+                        (new ConsoleLogger.ChatChannel("a")).Connections.Add(InstanceFinder.ClientManager.Connection);
+
+                        break;
+                    default:
+                        InvalidArguments(strings, info);
+                        break;
+                }
+            }, false, true);
+            addCommand("stophost", (strings, info) =>
+            {
+                Debug.LogWarning("Stopping host: ");
+                InstanceFinder.ClientManager.StopConnection();
+                InstanceFinder.ServerManager.StopConnection(true);
+            }, true, true);
         }
 
-        public static void callCommand(string command, string[] args, CommandCallInfo info)
+        public static bool callCommand(string command, string[] args, CommandCallInfo info)
         {
-            (commands.ContainsKey(command) ? commands[command] : missingCommand).Invoke(args, info);
+            if (_commands.ContainsKey(command))
+            {
+                _commands[command].Invoke(args, info);
+                return _commands[command].onServer;
+            }
+            MissingCommand(args, info);
+            return false;
+        }
+        
+        public static void callCommandS(string command, string[] args, CommandCallInfo info)
+        {
+            if (_commands.ContainsKey(command)) _commands[command].Invoke(args, info);
         }
 
         public static void addCommand(string name, Action<string[], CommandCallInfo> action, bool onServer = false, bool onClient = false)
         {
-            if (commands.ContainsKey(name))
+            if (_commands.ContainsKey(name))
                 Debug.LogWarning($"Command : {name} : is registered and being overwritten!");
-            commands[name] = new ChatCommand(action);
+            _commands[name] = new ChatCommand(action);
         }
         
         private void sendChatClient(string message)
         {
             var info = new CommandCallInfo();
             _input.text = "";
-            //TODO: impl
+            if (message.Length < 1 || message.Trim().Length == 0)
+                return;
+            
+            if (message[0] == '$' && message.Length >= 2)
+            {
+                var spl = message.Split(' ');
+                if (!callCommand(spl[0].Substring(1), spl, info))
+                    return;
+            }
+            
+            //TODO: impl (channels)
             InstanceFinder.ClientManager.Broadcast(new ChatMessage(message, "a"));
+        }
+
+        private static ChatCommand missingCommand = new ChatCommand(((strings, info) => 
+            Debug.Log($"No command found with name: {strings[0].Substring(1)}")), false, true);
+
+        private static Action<string[], CommandCallInfo> invalidArgs = (strings, info) => { Debug.Log("Invalid Arguments"); };
+        
+        private static void MissingCommand(string[] args, CommandCallInfo info)
+        {
+            Debug.LogWarning($"No command found with name: {args[0].Substring(1)}");
+        }
+
+        private static void InvalidArguments(string[] args, CommandCallInfo info)
+        {
+            string output = "";
+            for (var i = 1; i < args.Length; i++)
+            {
+                output += args[i];
+            }
+            Debug.LogWarning($"Invalid command argument(s) : {output}");
         }
         
         #endregion
@@ -111,31 +182,19 @@ namespace Console
         //Should be server side only
         public static void handleChat(ChatMessage message, CommandCallInfo info)
         {
-
-            //TODO: UNCOMMENT
-            //if (ChatChannel._channels.ContainsKey(message.channelId) && ChatChannel._channels[message.channelId].canMessageInChannel(info.conn))
-                
+            if (ChatChannel._channels.ContainsKey(message.channelId) && ChatChannel._channels[message.channelId].canMessageInChannel(info.conn))
                 InstanceFinder.ServerManager.Broadcast(ChatChannel._channels[message.channelId].Connections, message);
-            
         }
-        
 
-        //TODO: Probably needs to send a player, and their permission level
-        //Channel would also be good
-        
-
-        //S2C-R
+        //S2C-C
         public static void sendChatMessage(ChatMessage chatMessage)
         {
             _instance._text.text += chatMessage.message + "\n";
         }
-        
-        
-        //C2S-R
+
+        //C2S-S
         public static void recieveChatMessage(NetworkConnection connection, ChatMessage chatMessage)
         {
-            
-            
             
             var info = new CommandCallInfo(conn:connection);
             
@@ -150,7 +209,7 @@ namespace Console
             }
 
             var spl = chatMessage.message.Split(' ');
-            callCommand(spl[0].Substring(1), spl, info);
+            callCommandS(spl[0].Substring(1), spl, info);
         }
         
         public struct ChatMessage : IBroadcast
@@ -181,7 +240,8 @@ namespace Console
 
             public bool canMessageInChannel(NetworkConnection id)
             {
-                return Connections.Contains(id);
+                //TODO: FIX
+                return true;// Connections.Contains(id);
             }
             
         }

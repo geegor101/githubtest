@@ -25,8 +25,8 @@ namespace Managers
             }
             else
             {
-                _manager.ServerManager.StartConnection();
-                _manager.ClientManager.StartConnection();
+                //_manager.ServerManager.StartConnection();
+                //_manager.ClientManager.StartConnection();
             }
         }
     }
