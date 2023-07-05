@@ -4,6 +4,7 @@ using UnityEngine;
 
 namespace Managers
 {
+    [DisallowMultipleComponent]
     public class GameManager : MonoBehaviour
     {
         public static GameManager _instance { get; private set; }

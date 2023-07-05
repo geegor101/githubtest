@@ -1,17 +1,20 @@
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Reflection;
 using FishNet;
 using FishNet.Broadcast;
 using FishNet.Connection;
 using FishNet.Managing;
 using FishNet.Object;
+using JetBrains.Annotations;
 using TMPro;
 using UnityEngine;
+using Object = System.Object;
 
 namespace Console
 {
-    
+    [DisallowMultipleComponent]
     public class ConsoleLogger : MonoBehaviour
     {
 
@@ -73,70 +76,48 @@ namespace Console
 
         #region Call/Add CMDs
         
-        private static Dictionary<string, ChatCommand> _commands = new Dictionary<string, ChatCommand>();
+        private static readonly Dictionary<string, MethodInfo> _commands = new Dictionary<string, MethodInfo>();
 
         private static void addDefaultCommands()
         {
-            addCommand("test", (strings, info) => {Debug.Log(strings.ToString());}, true, false);
-            addCommand("start", (strings, info) => {
-                if (strings.Length != 2)
-                {
-                    InvalidArguments(strings, info);
-                    return;
-                }
-                    switch (strings[1])
-                {
-                    case "server" :
-                        Debug.LogWarning("Starting server: ");
-                        InstanceFinder.ServerManager.StartConnection();
-                        break;
-                    case "client" :
-                        Debug.LogWarning("Starting client: ");
-                        InstanceFinder.ClientManager.StartConnection();
-                        break;
-                    case "host" :
-                        Debug.LogWarning("Starting host: ");
-                        InstanceFinder.ServerManager.StartConnection();
-                        InstanceFinder.ClientManager.StartConnection();
-                        
-                        //TODO: REMOVE
-                        (new ConsoleLogger.ChatChannel("a")).Connections.Add(InstanceFinder.ClientManager.Connection);
-
-                        break;
-                    default:
-                        InvalidArguments(strings, info);
-                        break;
-                }
-            }, false, true);
-            addCommand("stophost", (strings, info) =>
+            foreach (Type type in Assembly.GetExecutingAssembly().GetTypes().Where(type => type.IsDefined(typeof(Commands.CommandHolderAttribute))))
             {
-                Debug.LogWarning("Stopping host: ");
-                InstanceFinder.ClientManager.StopConnection();
-                InstanceFinder.ServerManager.StopConnection(true);
-            }, true, true);
+                foreach (MethodInfo methodInfo in type.GetMethods().Where(info => info.IsDefined(typeof(Commands.CommandAttribute))))
+                {
+                    addCommand(methodInfo);
+                }
+            }
         }
 
-        public static bool callCommand(string command, string[] args, CommandCallInfo info)
+        private static bool callCommandC(string command, string[] args, CommandCallInfo info)
         {
-            if (_commands.ContainsKey(command))
+            if (_commands.ContainsKey(command) && _commands[command].GetCustomAttribute<Commands.CommandAttribute>() is { } attribute)
             {
-                _commands[command].Invoke(args, info);
-                return _commands[command].onServer;
+                //Debug.Log($"{attribute.isClient} C:S {attribute.isServer}, {attribute.permissionLevel}");
+                if (attribute.isClient)
+                    invokeCommand(command, args, info);
+                return attribute.isServer;
             }
             MissingCommand(args, info);
             return false;
         }
         
-        public static void callCommandS(string command, string[] args, CommandCallInfo info)
+        private static void callCommandS(string command, string[] args, CommandCallInfo info)
         {
-            if (_commands.ContainsKey(command)) _commands[command].Invoke(args, info);
+
+
+            if (_commands.ContainsKey(command))
+            {
+                invokeCommand(command, args, info);
+            }
         }
 
-        public static void addCommand(string name, Action<string[], CommandCallInfo> action, bool onServer = false, bool onClient = false)
+        private static void addCommand(MethodInfo action)
         {
-            if (_commands.ContainsKey(name))
-                Debug.LogWarning($"Command : {name} : is registered and being overwritten!");
-            _commands[name] = new ChatCommand(action);
+            var cmd = Commands.CommandAttribute.GetCommandAttribute(action);
+            if (_commands.ContainsKey(cmd.name))
+                Debug.LogWarning($"Command : {cmd.name} : is registered and being overwritten!");
+            _commands[cmd.name] = action;
         }
         
         private void sendChatClient(string message)
@@ -149,38 +130,35 @@ namespace Console
             if (message[0] == '$' && message.Length >= 2)
             {
                 var spl = message.Split(' ');
-                if (!callCommand(spl[0].Substring(1), spl, info))
+                if (!callCommandC(spl[0].Substring(1), spl, info))
                     return;
             }
-            
+
             //TODO: impl (channels)
             InstanceFinder.ClientManager.Broadcast(new ChatMessage(message, "a"));
         }
 
-        private static ChatCommand missingCommand = new ChatCommand(((strings, info) => 
-            Debug.Log($"No command found with name: {strings[0].Substring(1)}")), false, true);
-
-        private static Action<string[], CommandCallInfo> invalidArgs = (strings, info) => { Debug.Log("Invalid Arguments"); };
-        
         private static void MissingCommand(string[] args, CommandCallInfo info)
         {
             Debug.LogWarning($"No command found with name: {args[0].Substring(1)}");
         }
 
-        private static void InvalidArguments(string[] args, CommandCallInfo info)
+        private static void invokeCommand(string command, string[] args, CommandCallInfo info)
         {
-            string output = "";
-            for (var i = 1; i < args.Length; i++)
+            if (info.conn != null && !PermissionHandler.PlayerHasPermission(_commands[command]
+                    .GetCustomAttribute<Commands.CommandAttribute>().permissionLevel, info.conn))
             {
-                output += args[i];
+                Commands.NoPermissionError(args, info);
+                return;
             }
-            Debug.LogWarning($"Invalid command argument(s) : {output}");
+            _commands[command].Invoke(null, new object[] { args, info });
         }
         
+
         #endregion
         
         //Should be server side only
-        public static void handleChat(ChatMessage message, CommandCallInfo info)
+        private static void handleChat(ChatMessage message, CommandCallInfo info)
         {
             if (ChatChannel._channels.ContainsKey(message.channelId) && ChatChannel._channels[message.channelId].canMessageInChannel(info.conn))
                 InstanceFinder.ServerManager.Broadcast(ChatChannel._channels[message.channelId].Connections, message);
@@ -223,10 +201,10 @@ namespace Console
                 this.channelId = channelId;
             }
         }
-        public record CommandCallInfo(NetworkConnection conn = null);
+        public record CommandCallInfo([CanBeNull] NetworkConnection conn = null);
         public struct ChatChannel
         {
-            public readonly static Dictionary<string, ChatChannel> _channels = new Dictionary<string, ChatChannel>();
+            public static readonly Dictionary<string, ChatChannel> _channels = new Dictionary<string, ChatChannel>();
 
             //Check if the client has access
             public HashSet<NetworkConnection> Connections { get; private set; }
@@ -240,30 +218,10 @@ namespace Console
 
             public bool canMessageInChannel(NetworkConnection id)
             {
-                //TODO: FIX
+                //TODO: fix
                 return true;// Connections.Contains(id);
             }
             
-        }
-        
-        private class ChatCommand
-        {
-            public bool onServer { get; private set; }
-            public bool onClient { get; private set; }
-            
-            private Action<string[], CommandCallInfo> cmd;
-
-            public ChatCommand(Action<string[], CommandCallInfo> cmd, bool onServer = false, bool onClient = false)
-            {
-                this.cmd = cmd;
-                this.onServer = onServer;
-                this.onClient = onClient;
-            }
-
-            public void Invoke(string[] s, CommandCallInfo cci)
-            {
-                cmd.Invoke(s, cci);
-            }
         }
     }
     
