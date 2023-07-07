@@ -9,8 +9,19 @@ public class UIManager : MonoBehaviour
     void Start()
     {
         //GetComponent<UIDocument>().rootVisualElement.Q<DropdownField>()
+        
     }
 
-    // Update is called once per frame
+
+    /*
+     * EventTest.Invoke(2);
+        EventTest += i => i + 2;
+        
+        public delegate int DelegateTest(int i);
+
+    public event DelegateTest EventTest;
+     */
     
+    // Update is called once per frame
+
 }
