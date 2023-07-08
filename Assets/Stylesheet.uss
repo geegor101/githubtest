@@ -1,0 +1,23 @@
+.button {
+    width: 180px;
+    height: 65px;
+    margin-left: 20px;
+    margin-right: 20px;
+    margin-top: 20px;
+    margin-bottom: 20px;
+}
+
+.healthBar {
+    background-color: rgb(233, 228, 54);
+    -unity-background-image-tint-color: rgb(255, 255, 255);
+    border-left-color: rgb(241, 10, 10);
+    border-right-color: rgb(241, 10, 10);
+    border-top-color: rgb(241, 10, 10);
+    border-bottom-color: rgb(241, 10, 10);
+    border-bottom-width: 0;
+}
+
+.attackMenuButtons {
+    width: 60px;
+    height: 40px;
+}
