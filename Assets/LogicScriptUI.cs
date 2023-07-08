@@ -18,8 +18,35 @@ public class LogicScriptUI : BackgroundChangeWatcher
     public ActionInput currentActionInput = ActionInput.NONE;
     public List<(TalkInput, ActionInput)> pastActions = new List<(TalkInput, ActionInput)>();
     public Label turnLabel;
-    public ProgressBar loveBar;
-    public ProgressBar hateBar;
+    
+    private ProgressBar loveBar;
+    private ProgressBar hateBar;
+    
+    public float Love
+    {
+        get { return loveBar.value;}
+        set
+        {
+            OnLoveChanged?.Invoke(loveBar.value, value);
+            loveBar.value = value;
+        } 
+    }
+    
+    public float Hate
+    {
+        get { return hateBar.value;}
+        set
+        {
+            OnHateChanged?.Invoke(hateBar.value, value);
+            hateBar.value = value;
+        } 
+    }
+    
+    public delegate void LoveChangedDelegate(float oldValue, float newValue);
+    public delegate void HateChangedDelegate(float oldValue, float newValue);
+
+    public static event LoveChangedDelegate OnLoveChanged;
+    public static event HateChangedDelegate OnHateChanged;
 
     void Start()
     {
@@ -206,6 +233,8 @@ public class LogicScriptUI : BackgroundChangeWatcher
             attackButton.SetEnabled(true);
             GameManager.TakeTurn(currentTalkInput, currentActionInput);
         }
+        
+        
     }
     
     void swapFromTalkOptionsToMainOptions(List<Button> talkButtons, List<Button> mainAttackButtons, VisualElement botBtns)
