@@ -18,10 +18,11 @@ public class LogicScriptUI : BackgroundChangeWatcher
     public ActionInput currentActionInput = ActionInput.NONE;
     public List<(TalkInput, ActionInput)> pastActions = new List<(TalkInput, ActionInput)>();
     public Label turnLabel;
-    
+    private static LogicScriptUI _instance;
     private ProgressBar loveBar;
     private ProgressBar hateBar;
     
+    /// Their value, goal is to send to 0
     public float Love
     {
         get { return loveBar.value;}
@@ -32,6 +33,7 @@ public class LogicScriptUI : BackgroundChangeWatcher
         } 
     }
     
+    /// Our value, goal is to stay above 0
     public float Hate
     {
         get { return hateBar.value;}
@@ -48,8 +50,20 @@ public class LogicScriptUI : BackgroundChangeWatcher
     public static event LoveChangedDelegate OnLoveChanged;
     public static event HateChangedDelegate OnHateChanged;
 
+    public static void ReduceLove(float value)
+    {
+        _instance.Love -= value;
+    }
+
+    public static void ReduceHate(float value)
+    {
+        _instance.Hate -= value;
+    }
+    
+
     void Start()
     {
+        _instance = this;
         uiDocument = GetComponent<UIDocument>();
         
         loveBar = uiDocument.rootVisualElement.Q<ProgressBar>("loveBar");
