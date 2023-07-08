@@ -1,11 +1,12 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using DefaultNamespace;
 using UnityEditor.TestTools.CodeCoverage;
 using UnityEngine;
 using UnityEngine.UIElements;
 
-public class LogicScriptUI : MonoBehaviour
+public class LogicScriptUI : BackgroundChangeWatcher
 {
     // Start is called before the first frame update
     private UIDocument uiDocument;
@@ -173,6 +174,7 @@ public class LogicScriptUI : MonoBehaviour
     {
         
     }
+<<<<<<< Updated upstream
     
     void swapFromTalkOptionsToMainOptions(List<Button> talkButtons, List<Button> mainAttackButtons, VisualElement botBtns)
     {
@@ -200,4 +202,14 @@ public class LogicScriptUI : MonoBehaviour
         button.text = text;
         return button;
     }
+=======
+
+    protected override void OnBackgroundChange(BackgroundManager.BackgroundChangeContext context, HWEventCallback callback)
+    {
+        //uiDocument.rootVisualElement.SetEnabled(context.dest == "Game");
+        //foreach (VisualElement visualElement in uiDocument.rootVisualElement.Children()) { visualElement.visible = context.dest == "Game"; }
+        //uiDocument.enabled = context.dest == "Game";
+    }
+    
+>>>>>>> Stashed changes
 }
