@@ -4,17 +4,9 @@ using UnityEngine;
 
 using static GameManager;
 
+
 public class TalkAction : ResponseAction
 {
-    private TalkInput talkInput;
-    private ActionInput actionInput;
-
-    public TalkAction(TalkInput talk, ActionInput action)
-    {
-        talkInput = talk;
-        actionInput = action;
-    }
-
     protected override float CalcWeightInternal(TurnInput input)
     {
         // Calculate the weight based on the TalkInput and ActionInput
@@ -25,6 +17,6 @@ public class TalkAction : ResponseAction
 
     public override void DoAction(TurnInput input)
     {
-
+        
     }
 }

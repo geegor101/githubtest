@@ -18,13 +18,15 @@ public class LogicScriptUI : BackgroundChangeWatcher
     public ActionInput currentActionInput = ActionInput.NONE;
     public List<(TalkInput, ActionInput)> pastActions = new List<(TalkInput, ActionInput)>();
     public Label turnLabel;
+    public ProgressBar loveBar;
+    public ProgressBar hateBar;
 
     void Start()
     {
         uiDocument = GetComponent<UIDocument>();
         
-        ProgressBar loveBar = uiDocument.rootVisualElement.Q<ProgressBar>("loveBar");
-        ProgressBar hateBar = uiDocument.rootVisualElement.Q<ProgressBar>("hateBar");
+        loveBar = uiDocument.rootVisualElement.Q<ProgressBar>("loveBar");
+        hateBar = uiDocument.rootVisualElement.Q<ProgressBar>("hateBar");
 
         var botBtns = uiDocument.rootVisualElement.Q<VisualElement>("botBtns");
         var topBtns = uiDocument.rootVisualElement.Q<VisualElement>("topBtns");
