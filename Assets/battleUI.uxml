@@ -4,24 +4,22 @@
         <ui:VisualElement style="flex-grow: 1; justify-content: flex-start; align-items: flex-end; align-self: center; margin-top: 10px;">
             <ui:ProgressBar value="22" title="Hate bar" name="hateBar" class="healthBar" style="align-self: center; height: auto; width: 1300px; justify-content: flex-start; flex-direction: column; align-items: stretch; border-left-color: rgba(226, 142, 225, 0); border-right-color: rgba(226, 142, 225, 0); border-top-color: rgba(226, 142, 225, 0); border-bottom-color: rgba(226, 142, 225, 0); background-color: rgb(13, 255, 30); -unity-background-image-tint-color: rgba(204, 30, 30, 0); background-image: none; -unity-background-scale-mode: stretch-to-fill;" />
         </ui:VisualElement>
-        <ui:VisualElement name="attackOptions" style="flex-grow: 1; background-color: rgba(209, 171, 171, 0.98); justify-content: flex-end; align-self: center; align-items: center; margin-left: 0; margin-right: 0; border-left-color: rgb(0, 0, 0); border-right-color: rgb(0, 0, 0); border-top-color: rgb(0, 0, 0); border-bottom-color: rgb(0, 0, 0); border-left-width: 1px; border-right-width: 1px; border-top-width: 1px; border-bottom-width: 1px; width: 20%; display: flex; visibility: visible;">
-            <ui:VisualElement name="topButtons" style="flex-grow: 1; background-color: rgba(0, 0, 0, 0); justify-content: flex-end; flex-direction: row; align-items: flex-end;">
-                <ui:Button text="Button" display-tooltip-when-elided="true" class="attackMenuButtons" />
-                <ui:Button text="Button" display-tooltip-when-elided="true" class="attackMenuButtons" />
-            </ui:VisualElement>
-            <ui:VisualElement name="botButtons" style="flex-grow: 1; background-color: rgba(0, 0, 0, 0); align-items: flex-start; justify-content: center; flex-direction: row-reverse; align-self: center;">
-                <ui:Button text="Button" display-tooltip-when-elided="true" class="attackMenuButtons" />
-                <ui:Button text="Button" display-tooltip-when-elided="true" class="attackMenuButtons" />
-            </ui:VisualElement>
-        </ui:VisualElement>
-        <ui:VisualElement style="flex-grow: 1; background-color: rgba(0, 0, 0, 0);">
-            <ui:VisualElement name="battleOptions" style="flex-grow: 1; background-color: rgba(0, 0, 0, 0); flex-wrap: nowrap; flex-direction: row; flex-basis: 10%; align-items: flex-end; justify-content: center; align-self: center; height: auto; padding-left: 15%; padding-right: 15%; border-left-color: rgb(0, 0, 0); border-right-color: rgb(0, 0, 0); border-top-color: rgb(0, 0, 0); border-bottom-color: rgb(0, 0, 0); border-left-width: 0; border-right-width: 0; border-top-width: 0; border-bottom-width: 0; width: 1514px;">
-                <ui:VisualElement name="topBtns" style="flex-grow: 1; background-color: rgba(0, 0, 0, 0); align-self: flex-end; justify-content: center; align-items: center; flex-direction: row;">
-                    <ui:Button text="Attack" display-tooltip-when-elided="true" name="attackButton" class="button" />
-                    <ui:Button text="Talk" display-tooltip-when-elided="true" name="talkButton" class="button" />
-                    <ui:Button text="Action" display-tooltip-when-elided="true" enable-rich-text="true" focusable="false" name="actionButton" class="button" />
+        <ui:VisualElement name="VisualElement" style="flex-grow: 1; background-color: rgba(0, 0, 0, 0); justify-content: flex-end; align-items: flex-start; align-self: center;">
+            <ui:VisualElement name="battleOptions" style="flex-grow: 1; background-color: rgba(0, 0, 0, 0); flex-wrap: nowrap; flex-direction: row; flex-basis: 10%; align-items: flex-end; justify-content: center; align-self: center; height: auto; padding-left: 15%; padding-right: 15%; border-left-color: rgb(0, 0, 0); border-right-color: rgb(0, 0, 0); border-top-color: rgb(0, 0, 0); border-bottom-color: rgb(0, 0, 0); border-left-width: 0; border-right-width: 0; border-top-width: 0; border-bottom-width: 0; width: 1514px; overflow: visible; visibility: visible;">
+                <ui:VisualElement name="mainButtonContainer" style="flex-grow: 1; background-color: rgba(0, 0, 0, 0); align-items: flex-end; justify-content: flex-end; align-self: flex-end; overflow: visible; display: flex; visibility: visible;">
+                    <ui:VisualElement name="topBtns" style="flex-grow: 1; background-color: rgba(0, 0, 0, 0); align-self: center; justify-content: flex-end; align-items: flex-end; flex-direction: row; height: 658px; overflow: visible; visibility: visible; display: none;" />
+                    <ui:VisualElement name="attackOptions" style="flex-grow: 1; background-color: rgba(0, 0, 0, 0); justify-content: flex-end; align-items: flex-end; flex-direction: column; align-self: center; height: 270px;">
+                        <ui:VisualElement name="VisualElement" style="flex-grow: 1; background-color: rgba(0, 0, 0, 0); align-items: flex-end; align-self: flex-end; flex-direction: row; height: 764px; justify-content: flex-end; margin-bottom: 20px;">
+                            <ui:Button text="Button" display-tooltip-when-elided="true" class="button" style="margin-top: 0; margin-bottom: 0; visibility: visible;" />
+                            <ui:Button text="Button" display-tooltip-when-elided="true" class="button" style="margin-bottom: 0; visibility: visible;" />
+                        </ui:VisualElement>
+                        <ui:VisualElement style="flex-grow: 1; background-color: rgba(0, 0, 0, 0); flex-direction: row; align-self: center; align-items: flex-end; justify-content: flex-end;">
+                            <ui:Button text="Attack" display-tooltip-when-elided="true" name="attackButton" class="attackMenuButtons button" style="visibility: hidden;" />
+                            <ui:Button text="Action" display-tooltip-when-elided="true" name="actionButton" class="attackMenuButtons button" style="margin-bottom: 20px;" />
+                            <ui:Button text="Talk" display-tooltip-when-elided="true" name="talkButton" class="button" />
+                        </ui:VisualElement>
+                    </ui:VisualElement>
                 </ui:VisualElement>
-                <ui:VisualElement name="botBtns" style="flex-grow: 1; background-color: rgba(0, 0, 0, 0);" />
             </ui:VisualElement>
             <ui:VisualElement name="VisualElement" style="flex-grow: 1; background-color: rgba(0, 0, 0, 0); flex-basis: 1%; align-items: center; height: 10%; justify-content: center; align-self: center; width: auto; flex-direction: column-reverse; flex-wrap: wrap; max-height: 40px;">
                 <ui:ProgressBar value="22" title="Love Bar" name="loveBar" style="align-items: stretch; justify-content: space-around; align-self: auto; width: 813px; height: auto; margin-top: 0;" />
