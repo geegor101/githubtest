@@ -21,26 +21,31 @@ public class LogicScriptUI : BackgroundChangeWatcher
     private static LogicScriptUI _instance;
     private ProgressBar loveBar;
     private ProgressBar hateBar;
+
+    private float _loveIntenal = 0;
+    private float _hateInternal = 0;
     
     /// Their value, goal is to send to 0
     public float Love
     {
-        get { return loveBar.value;}
+        get { return _loveIntenal;}
         set
         {
-            OnLoveChanged?.Invoke(loveBar.value, value);
-            loveBar.value = value;
+            OnLoveChanged?.Invoke(_loveIntenal, value);
+            _loveIntenal = value;
+            loveBar.value = _loveIntenal;
         } 
     }
     
     /// Our value, goal is to stay above 0
     public float Hate
     {
-        get { return hateBar.value;}
+        get { return _hateInternal;}
         set
         {
-            OnHateChanged?.Invoke(hateBar.value, value);
-            hateBar.value = value;
+            OnHateChanged?.Invoke(_hateInternal, value);
+            _hateInternal = value;
+            hateBar.value = _hateInternal;
         } 
     }
     
