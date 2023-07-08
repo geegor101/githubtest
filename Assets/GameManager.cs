@@ -23,6 +23,7 @@ public class GameManager : MonoBehaviour
     void Start()
     {
         LoadContextActions();
+        //TakeTurn(TalkInput.TALKA, ActionInput.ACTIONA);
     }
     
     public void TakeTurn(TalkInput talkInput, ActionInput actionInput)
@@ -31,25 +32,29 @@ public class GameManager : MonoBehaviour
         TurnInput turnInput = new TurnInput(talkInput, actionInput);
         GatherResponsesEvent.Invoke(turnInput, callback);
         pastActions.Add(turnInput);
-        IEnumerable<ResponseAction> responseActions = callback.GetResponseActions().Take(2);
+        IEnumerable<ResponseAction> responseActions = callback.GetResponseActions();//.Take(2);
         if (responseActions.Count() <= 0)
             return; //TODO Call default action here
+        foreach (ResponseAction responseAction in responseActions)
+        {
+            responseAction.DoAction(turnInput);
+        }
         
     }
     public enum TalkInput
     {
-        IGNORE,
-        ITSNOTYOU,
-        IHATEYOU,
-        ILOVEYOU
+        TALKA,
+        TALKB,
+        TALKC,
+        TALKD
     }
     
     public enum ActionInput
     {
-        NOTHING,
-        STUDY,
-        SPENDTIME,
-        STRIPPERS
+        ACTIONA,
+        ACTIONB,
+        ACTIONC,
+        ACTIOND
     }
     
     /**
@@ -69,7 +74,7 @@ public class GameManager : MonoBehaviour
         /**
          * Use the input to calculate the weighting of this action. return a negative value if it is not valid
          */
-        public abstract float CalcWeightInternal(TurnInput input);
+        protected abstract float CalcWeightInternal(TurnInput input);
 
         public float getWeightCache()
         {
@@ -100,7 +105,7 @@ public class GameManager : MonoBehaviour
     {
         foreach (Type type in Assembly.GetExecutingAssembly().GetTypes().Where(type => type.IsDefined(typeof(ResponseActionAttribute))))
         {
-            if (type == typeof(ResponseAction))
+            if (type.IsAbstract)
                 return;
             GatherResponsesEvent += ((ResponseAction)Activator.CreateInstance(type)).CalcWeight;
         }
