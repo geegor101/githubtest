@@ -3,19 +3,37 @@ using System.Collections;
 using System.Collections.Generic;
 using DefaultNamespace;
 using UnityEngine;
+using UnityEngine.UIElements;
 
 public class BackgroundManager : MonoBehaviour
 {
     
     public static string _background { get; private set; }
 
-    [SerializeField] private string _startingBackground;
+    //[SerializeField] private string _startingBackground;
     
-    private void Start()
+    /*
+     * Viable Backgrounds
+     * Title
+     * End
+     * Game
+     */
+
+    public static void StartGame()
     {
-        ChangeBackground(_startingBackground);
+        ChangeBackground("Game");
     }
 
+    public static void EndGame()
+    {
+        ChangeBackground("End");
+    }
+
+    public static void TitleScreen()
+    {
+        ChangeBackground("Title");
+    }
+    
     public static void ChangeBackground(string destination)
     {
         if (destination.Equals(_background))
@@ -24,12 +42,14 @@ public class BackgroundManager : MonoBehaviour
             , new HWEventCallback());
         _background = destination;
     }
-    
-        /*
-        OnChangeBackground += (context, callback) => { };
-        OnChangeBackground.Invoke(null, null);
-        */
-        
+
+    #region Internal
+
+    private void Start()
+    {
+        TitleScreen();
+    }
+
     public delegate void BackgroundChangeDelegate(BackgroundChangeContext context, HWEventCallback callback);
     public static event BackgroundChangeDelegate OnChangeBackground;
 
@@ -40,4 +60,7 @@ public class BackgroundManager : MonoBehaviour
             return ctx.dest;
         }
     }
+
+    #endregion
+    
 }
