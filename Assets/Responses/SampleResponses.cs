@@ -19,7 +19,5 @@ namespace DefaultNamespace.Responses
         }
     }
     
-    
-
     #endregion
 }
