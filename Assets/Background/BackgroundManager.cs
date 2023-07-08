@@ -2,6 +2,7 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using DefaultNamespace;
+using Unity.VisualScripting;
 using UnityEngine;
 using UnityEngine.UIElements;
 
@@ -47,7 +48,8 @@ public class BackgroundManager : MonoBehaviour
 
     private void Start()
     {
-        TitleScreen();
+        //TitleScreen();
+        StartGame();
     }
 
     public delegate void BackgroundChangeDelegate(BackgroundChangeContext context, HWEventCallback callback);

@@ -104,7 +104,7 @@ public class GameManager : MonoBehaviour
         }
     }
 
-    private void LoadContextActions()
+    private static void LoadContextActions()
     {
         foreach (Type type in Assembly.GetExecutingAssembly().GetTypes().Where(type => type.IsDefined(typeof(ResponseActionAttribute))))
         {

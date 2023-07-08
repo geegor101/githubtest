@@ -3,13 +3,14 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEditor;
 using UnityEditor.Build.Content;
+using DefaultNamespace;
 using UnityEditor.TestTools.CodeCoverage;
 using UnityEngine;
 using UnityEngine.UIElements;
 
 using static GameManager;
 
-public class LogicScriptUI : MonoBehaviour
+public class LogicScriptUI : BackgroundChangeWatcher
 {
     // Start is called before the first frame update
     private UIDocument uiDocument;
@@ -231,4 +232,13 @@ public class LogicScriptUI : MonoBehaviour
         button.text = text;
         return button;
     }
+    
+    protected override void OnBackgroundChange(BackgroundManager.BackgroundChangeContext context, HWEventCallback callback)
+    {
+        //uiDocument.rootVisualElement.SetEnabled(context.dest == "Game");
+        //foreach (VisualElement visualElement in uiDocument.rootVisualElement.Children()) { visualElement.visible = context.dest == "Game"; }
+        //uiDocument.enabled = context.dest == "Game";
+    }
+    
+
 }
