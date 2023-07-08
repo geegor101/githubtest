@@ -3,6 +3,8 @@
 namespace DefaultNamespace.Responses
 {
 
+    #region GoodGirlFriendResponses
+
     public class CallName : GameManager.ResponseAction
     {
         protected override float CalcWeightInternal(GameManager.TurnInput input)
@@ -18,4 +20,6 @@ namespace DefaultNamespace.Responses
     }
     
     
+
+    #endregion
 }

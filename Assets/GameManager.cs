@@ -26,11 +26,12 @@ public class GameManager : MonoBehaviour
         //TakeTurn(TalkInput.TALKA, ActionInput.ACTIONA);
     }
     
-    public void TakeTurn(TalkInput talkInput, ActionInput actionInput)
+    public static void TakeTurn(TalkInput talkInput, ActionInput actionInput)
     {
+        Debug.Log("Taking turn");
         ResponseActionCallback callback = new ResponseActionCallback();
         TurnInput turnInput = new TurnInput(talkInput, actionInput);
-        GatherResponsesEvent.Invoke(turnInput, callback);
+        GatherResponsesEvent?.Invoke(turnInput, callback);
         pastActions.Add(turnInput);
         IEnumerable<ResponseAction> responseActions = callback.GetResponseActions();//.Take(2);
         if (responseActions.Count() <= 0)
@@ -43,6 +44,7 @@ public class GameManager : MonoBehaviour
     }
     public enum TalkInput
     {
+        NONE,
         TALKA,
         TALKB,
         TALKC,
@@ -51,6 +53,7 @@ public class GameManager : MonoBehaviour
     
     public enum ActionInput
     {
+        NONE,
         ACTIONA,
         ACTIONB,
         ACTIONC,

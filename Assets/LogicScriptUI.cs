@@ -1,14 +1,23 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using UnityEditor;
+using UnityEditor.Build.Content;
 using UnityEditor.TestTools.CodeCoverage;
 using UnityEngine;
 using UnityEngine.UIElements;
+
+using static GameManager;
 
 public class LogicScriptUI : MonoBehaviour
 {
     // Start is called before the first frame update
     private UIDocument uiDocument;
+    public TalkInput currentTalkInput = TalkInput.NONE;
+    public ActionInput currentActionInput = ActionInput.NONE;
+    public List<(TalkInput, ActionInput)> pastActions = new List<(TalkInput, ActionInput)>();
+    public Label turnLabel;
+
     void Start()
     {
         uiDocument = GetComponent<UIDocument>();
@@ -29,6 +38,9 @@ public class LogicScriptUI : MonoBehaviour
         mainAttackButtons.Add(talkButton);
         mainAttackButtons.Add(actionButton);
         
+        turnLabel = uiDocument.rootVisualElement.Q<Label>("turnLabel");
+        //Default state
+        attackButton.SetEnabled(false);
 
         //Buttons for the main menu
 
@@ -52,6 +64,7 @@ public class LogicScriptUI : MonoBehaviour
         {
             Debug.Log("itsNotYouItsMe Clicked");
             loveBar.value += 0.1f;
+            currentTalkInput = TalkInput.TALKA;
 
             swapFromTalkOptionsToMainOptions(talkButtons, mainAttackButtons, botBtns);
         };
@@ -60,6 +73,7 @@ public class LogicScriptUI : MonoBehaviour
         {
             Debug.Log("iNeedSomeTime Clicked");
             loveBar.value += 0.1f;
+            currentTalkInput = TalkInput.TALKB;
             
             swapFromTalkOptionsToMainOptions(talkButtons, mainAttackButtons, botBtns);
         };
@@ -67,6 +81,8 @@ public class LogicScriptUI : MonoBehaviour
         iLoveYou.clicked += () =>
         {
             Debug.Log("iLoveYou Clicked");
+            currentTalkInput = TalkInput.TALKC;
+            
             swapFromTalkOptionsToMainOptions(talkButtons, mainAttackButtons, botBtns);
         };
         
@@ -74,6 +90,7 @@ public class LogicScriptUI : MonoBehaviour
         {
             Debug.Log("doNothing Clicked");
             loveBar.value += 0.1f;
+            currentTalkInput = TalkInput.TALKD;
             
             swapFromTalkOptionsToMainOptions(talkButtons, mainAttackButtons, botBtns);
         };
@@ -94,6 +111,7 @@ public class LogicScriptUI : MonoBehaviour
         {
             Debug.Log("makeCookiesForSister Clicked");
             loveBar.value += 0.1f;
+            currentActionInput = ActionInput.ACTIONA;
             
             swapFromTalkOptionsToMainOptions(actionButtons, mainAttackButtons, botBtns);
         };
@@ -102,6 +120,7 @@ public class LogicScriptUI : MonoBehaviour
         {
             Debug.Log("makeCookiesForMe Clicked");
             loveBar.value += 0.1f;
+            currentActionInput = ActionInput.ACTIONB;
             
             swapFromTalkOptionsToMainOptions(actionButtons, mainAttackButtons, botBtns);
         };
@@ -110,6 +129,7 @@ public class LogicScriptUI : MonoBehaviour
         {
             Debug.Log("spendTimeTogether Clicked");
             loveBar.value += 0.1f;
+            currentActionInput = ActionInput.ACTIONC;
             
             swapFromTalkOptionsToMainOptions(actionButtons, mainAttackButtons, botBtns);
         };
@@ -118,6 +138,7 @@ public class LogicScriptUI : MonoBehaviour
         {
             Debug.Log("doNothingAction Clicked");
             loveBar.value += 0.1f;
+            currentActionInput = ActionInput.ACTIOND;
             
             swapFromTalkOptionsToMainOptions(actionButtons, mainAttackButtons, botBtns);
         };
@@ -134,8 +155,15 @@ public class LogicScriptUI : MonoBehaviour
         {
             Debug.Log("attackButton Clicked");
             loveBar.value += 0.1f;
-            //topBtns.RemoveFromHierarchy();
-            mainButtonContainer.Add(botBtns);
+            
+            currentTalkInput = TalkInput.NONE;
+            currentActionInput = ActionInput.NONE;
+            pastActions.Add((currentTalkInput, currentActionInput));
+            var currentTurn = pastActions.Count + 1;
+            
+            turnLabel.text = "Turn: " + currentTurn;
+
+            attackButton.SetEnabled(false);
         };
         
         uiDocument.rootVisualElement.Q<Button>("talkButton").clicked += () =>
@@ -164,14 +192,17 @@ public class LogicScriptUI : MonoBehaviour
             topBtns.Add(makeCookiesForMe);
             botBtns.Add(spendTimeTogether);
             botBtns.Add(doNothingAction);
-            
-
         };
     }
     // Update is called once per frame
     void Update()
     {
-        
+        if (currentTalkInput != TalkInput.NONE && currentActionInput != ActionInput.NONE)
+        {
+            Button attackButton = uiDocument.rootVisualElement.Q<Button>("attackButton");
+            attackButton.SetEnabled(true);
+            GameManager.TakeTurn(currentTalkInput, currentActionInput);
+        }
     }
     
     void swapFromTalkOptionsToMainOptions(List<Button> talkButtons, List<Button> mainAttackButtons, VisualElement botBtns)
