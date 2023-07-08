@@ -18,11 +18,57 @@ public class LogicScriptUI : BackgroundChangeWatcher
     public ActionInput currentActionInput = ActionInput.NONE;
     public List<(TalkInput, ActionInput)> pastActions = new List<(TalkInput, ActionInput)>();
     public Label turnLabel;
-    public ProgressBar loveBar;
-    public ProgressBar hateBar;
+    private static LogicScriptUI _instance;
+    private ProgressBar loveBar;
+    private ProgressBar hateBar;
+
+    private float _loveIntenal = 0;
+    private float _hateInternal = 0;
+    
+    /// Their value, goal is to send to 0
+    public float Love
+    {
+        get { return _loveIntenal;}
+        set
+        {
+            OnLoveChanged?.Invoke(_loveIntenal, value);
+            _loveIntenal = value;
+            loveBar.value = _loveIntenal;
+        } 
+    }
+    
+    /// Our value, goal is to stay above 0
+    public float Hate
+    {
+        get { return _hateInternal;}
+        set
+        {
+            OnHateChanged?.Invoke(_hateInternal, value);
+            _hateInternal = value;
+            hateBar.value = _hateInternal;
+        } 
+    }
+    
+    public delegate void LoveChangedDelegate(float oldValue, float newValue);
+    public delegate void HateChangedDelegate(float oldValue, float newValue);
+
+    public static event LoveChangedDelegate OnLoveChanged;
+    public static event HateChangedDelegate OnHateChanged;
+
+    public static void ReduceLove(float value)
+    {
+        _instance.Love -= value;
+    }
+
+    public static void ReduceHate(float value)
+    {
+        _instance.Hate -= value;
+    }
+    
 
     void Start()
     {
+        _instance = this;
         uiDocument = GetComponent<UIDocument>();
         
         loveBar = uiDocument.rootVisualElement.Q<ProgressBar>("loveBar");
@@ -206,6 +252,8 @@ public class LogicScriptUI : BackgroundChangeWatcher
             attackButton.SetEnabled(true);
             GameManager.TakeTurn(currentTalkInput, currentActionInput);
         }
+        
+        
     }
     
     void swapFromTalkOptionsToMainOptions(List<Button> talkButtons, List<Button> mainAttackButtons, VisualElement botBtns)
