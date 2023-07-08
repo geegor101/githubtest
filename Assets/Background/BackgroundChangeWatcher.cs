@@ -8,8 +8,6 @@ using UnityEngine;
 public class BackgroundChangeWatcher : MonoBehaviour
 {
     
-    
-
     [SerializeField]
     public string[] activeBackgrounds = new string[]{};
 
@@ -24,7 +22,7 @@ public class BackgroundChangeWatcher : MonoBehaviour
     }
 
 
-    protected void OnBackgroundChange(BackgroundManager.BackgroundChangeContext context, HWEventCallback callback)
+    protected virtual void OnBackgroundChange(BackgroundManager.BackgroundChangeContext context, HWEventCallback callback)
     {
         
     }
