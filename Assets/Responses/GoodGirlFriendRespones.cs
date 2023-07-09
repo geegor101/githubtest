@@ -78,6 +78,7 @@ public class mediumHate : ResponseAction
     {
         // Calculate the weight based on the TalkInput and ActionInput
         // Return a negative value if the action is not valid for the given input
+        /*
         float weight = -10;
         
         List<TurnInput> goodInputs = new List<TurnInput>();
@@ -95,8 +96,8 @@ public class mediumHate : ResponseAction
         {
             weight *= -1;
         }
-        
-        return weight;
+        */
+        return input.isApplicable(0b1010_0011_1001_0011) ? 10 : -1;
     }
 
     public override void DoAction(TurnInput input)
