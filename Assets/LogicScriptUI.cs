@@ -18,6 +18,9 @@ public class LogicScriptUI : BackgroundChangeWatcher
     public ActionInput currentActionInput = ActionInput.NONE;
     public List<(TalkInput, ActionInput)> pastActions = new List<(TalkInput, ActionInput)>();
     public Label turnLabel;
+    public Label actionDialog;
+    public Label talkDialog;
+    
     private static LogicScriptUI _instance;
     
     private Label dialog;
@@ -89,6 +92,7 @@ public class LogicScriptUI : BackgroundChangeWatcher
         loveBar = uiDocument.rootVisualElement.Q<ProgressBar>("loveBar");
         hateBar = uiDocument.rootVisualElement.Q<ProgressBar>("hateBar");
         //TODO: get dialog here
+        dialog = uiDocument.rootVisualElement.Q<Label>("dialog");
         
         var botBtns = uiDocument.rootVisualElement.Q<VisualElement>("botBtns");
         var topBtns = uiDocument.rootVisualElement.Q<VisualElement>("topBtns");
@@ -129,6 +133,7 @@ public class LogicScriptUI : BackgroundChangeWatcher
         {
             Debug.Log("itsNotYouItsMe Clicked");
             currentTalkInput = TalkInput.TALKA;
+            setTalkDialog("It's not you, it's me");
 
             swapFromTalkOptionsToMainOptions(talkButtons, mainAttackButtons, botBtns);
         };
@@ -137,6 +142,7 @@ public class LogicScriptUI : BackgroundChangeWatcher
         {
             Debug.Log("iNeedSomeTime Clicked");
             currentTalkInput = TalkInput.TALKB;
+            setTalkDialog("I need some time");
             
             swapFromTalkOptionsToMainOptions(talkButtons, mainAttackButtons, botBtns);
         };
@@ -145,6 +151,7 @@ public class LogicScriptUI : BackgroundChangeWatcher
         {
             Debug.Log("iLoveYou Clicked");
             currentTalkInput = TalkInput.TALKC;
+            setTalkDialog("I love you");
             
             swapFromTalkOptionsToMainOptions(talkButtons, mainAttackButtons, botBtns);
         };
@@ -153,6 +160,7 @@ public class LogicScriptUI : BackgroundChangeWatcher
         {
             Debug.Log("doNothing Clicked");
             currentTalkInput = TalkInput.TALKD;
+            setTalkDialog("Ignore");
             
             swapFromTalkOptionsToMainOptions(talkButtons, mainAttackButtons, botBtns);
         };
@@ -173,7 +181,8 @@ public class LogicScriptUI : BackgroundChangeWatcher
         {
             Debug.Log("makeCookiesForSister Clicked");
             currentActionInput = ActionInput.ACTIONA;
-            
+            setActionDialog("Make cookies for sister");
+
             swapFromTalkOptionsToMainOptions(actionButtons, mainAttackButtons, botBtns);
         };
         
@@ -181,6 +190,7 @@ public class LogicScriptUI : BackgroundChangeWatcher
         {
             Debug.Log("makeCookiesForMe Clicked");
             currentActionInput = ActionInput.ACTIONB;
+            setActionDialog("Give Gift");
             
             swapFromTalkOptionsToMainOptions(actionButtons, mainAttackButtons, botBtns);
         };
@@ -189,6 +199,7 @@ public class LogicScriptUI : BackgroundChangeWatcher
         {
             Debug.Log("spendTimeTogether Clicked");
             currentActionInput = ActionInput.ACTIONC;
+            setActionDialog("Spend time together");
             
             swapFromTalkOptionsToMainOptions(actionButtons, mainAttackButtons, botBtns);
         };
@@ -197,6 +208,7 @@ public class LogicScriptUI : BackgroundChangeWatcher
         {
             Debug.Log("doNothingAction Clicked");
             currentActionInput = ActionInput.ACTIOND;
+            setActionDialog("Nothing");
             
             swapFromTalkOptionsToMainOptions(actionButtons, mainAttackButtons, botBtns);
         };
@@ -278,6 +290,18 @@ public class LogicScriptUI : BackgroundChangeWatcher
    
         button.text = text;
         return button;
+    }
+    
+    public void setActionDialog(string text)
+    {
+        var actionText = uiDocument.rootVisualElement.Q<Label>("actionDialog");
+        actionText.text = $"ACTION: {text}";
+    }
+    
+    public void setTalkDialog(string text)
+    {
+        var talkText = uiDocument.rootVisualElement.Q<Label>("talkDialog");
+        talkText.text = $"TALK: {text}";
     }
     
     public void setDialogueText(string text)

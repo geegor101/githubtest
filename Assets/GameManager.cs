@@ -137,7 +137,7 @@ public class GameManager : MonoBehaviour
 
         public bool isApplicable(uint mask)
         {
-            return (mask & ((uint)ActionInput * 4 + (uint)TalkInput)) > 0;
+            return (mask & ((uint)0b1 << (((int)ActionInput >> 1 << 2) + (int) TalkInput >> 1))) > 0;
 
             //return ((talkMask & (byte)TalkInput) > 0) && ((actionMask & (byte)ActionInput) > 0);
         }
