@@ -62,7 +62,7 @@ public class smallLove : ResponseAction
          //
          // return weight;
          //
-         return input.isApplicable(0b1111_1111_1111_1111) ? 5 : 0;
+         return input.isApplicable(0b0000_0000_0100_0010) ? 5 : 0;
     }
 
     public override void DoAction(TurnInput input)
@@ -78,9 +78,26 @@ public class mediumHate : ResponseAction
     {
         // Calculate the weight based on the TalkInput and ActionInput
         // Return a negative value if the action is not valid for the given input
+        /*
         float weight = -10;
-
-        return weight;
+        
+        List<TurnInput> goodInputs = new List<TurnInput>();
+        
+        goodInputs.Add(new TurnInput(TalkInput.TALKB, ActionInput.ACTIONA));
+        goodInputs.Add(new TurnInput(TalkInput.TALKD, ActionInput.ACTIONA));
+        goodInputs.Add(new TurnInput(TalkInput.TALKA, ActionInput.ACTIONC));
+        goodInputs.Add(new TurnInput(TalkInput.TALKC, ActionInput.ACTIONC));
+        goodInputs.Add(new TurnInput(TalkInput.TALKD, ActionInput.ACTIONC));
+        goodInputs.Add(new TurnInput(TalkInput.TALKA, ActionInput.ACTIOND));
+        goodInputs.Add(new TurnInput(TalkInput.TALKB, ActionInput.ACTIOND));
+        goodInputs.Add(new TurnInput(TalkInput.TALKC, ActionInput.ACTIOND));
+        
+        if( goodInputs.Contains(input))
+        {
+            weight *= -1;
+        }
+        */
+        return input.isApplicable(0b1010_0011_1001_0011) ? 10 : -1;
     }
 
     public override void DoAction(TurnInput input)
