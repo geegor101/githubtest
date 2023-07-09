@@ -11,7 +11,7 @@ public class smallHate : ResponseAction
 {
     protected override float CalcWeightInternal(TurnInput input)
     {
-        // Calculate the weight based on the TalkInput and ActionInput
+        // Calculate the weight value on the TalkInput and ActionInput
         // Return a negative value if the action is not valid for the given input
         float weight = 5;
         return weight;
@@ -96,7 +96,7 @@ public class mediumHate : ResponseAction
 
     public override void DoAction(TurnInput input)
     {
-        LogicScriptUI.ReduceHate(20);
+        LogicScriptUI.ReduceHate(10);
     }
 }
 
@@ -112,7 +112,7 @@ public class mediumLove : ResponseAction
 
     public override void DoAction(TurnInput input)
     {
-        
+        LogicScriptUI.ReduceLove(10);
     }
 }
 
@@ -128,7 +128,7 @@ public class bigHate : ResponseAction
 
     public override void DoAction(TurnInput input)
     {
-        
+        LogicScriptUI.ReduceHate(20);
     }
 }
 
@@ -144,7 +144,7 @@ public class bigLove : ResponseAction
 
     public override void DoAction(TurnInput input)
     {
-        
+        LogicScriptUI.ReduceLove(20);
     }
 }
 
