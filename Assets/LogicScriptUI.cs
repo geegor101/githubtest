@@ -19,33 +19,39 @@ public class LogicScriptUI : BackgroundChangeWatcher
     public List<(TalkInput, ActionInput)> pastActions = new List<(TalkInput, ActionInput)>();
     public Label turnLabel;
     private static LogicScriptUI _instance;
+    
+    private Label dialog;
+    public static void SendDialog(string text, bool you)
+    {
+        _instance.dialog.text += $"{(you ? "You" : "Alice" )}: {text}";
+    }
+    
     private ProgressBar loveBar;
     private ProgressBar hateBar;
-
     private float _loveIntenal = 0;
     private float _hateInternal = 0;
 
     /// Their value, goal is to send to 0
-    public float Love
+    public static float Love
     {
-        get { return _loveIntenal;}
+        get => _instance._loveIntenal;
         set
         {
-            OnLoveChanged?.Invoke(_loveIntenal, value);
-            _loveIntenal = value;
-            loveBar.value = _loveIntenal;
+            OnLoveChanged?.Invoke( _instance._loveIntenal, value);
+            _instance._loveIntenal = value;
+            _instance.loveBar.value = _instance._loveIntenal;
         } 
     }
     
     /// Our value, goal is to stay above 0
-    public float Hate
+    public static float Hate
     {
-        get { return _hateInternal;}
+        get => _instance._hateInternal;
         set
         {
-            OnHateChanged?.Invoke(_hateInternal, value);
-            _hateInternal = value;
-            hateBar.value = _hateInternal;
+            OnHateChanged?.Invoke(_instance._hateInternal, value);
+            _instance._hateInternal = value;
+            _instance.hateBar.value = _instance._hateInternal;
         } 
     }
     
@@ -58,13 +64,13 @@ public class LogicScriptUI : BackgroundChangeWatcher
     public static void ReduceLove(float value)
     {
         if (_instance != null)
-            _instance.Love -= value;
+            Love -= value;
     }
 
     public static void ReduceHate(float value)
     {
         if (_instance != null)
-            _instance.Hate -= value;
+            Hate -= value;
     }
     
 
@@ -81,7 +87,8 @@ public class LogicScriptUI : BackgroundChangeWatcher
         
         loveBar = uiDocument.rootVisualElement.Q<ProgressBar>("loveBar");
         hateBar = uiDocument.rootVisualElement.Q<ProgressBar>("hateBar");
-
+        //TODO: get dialog here
+        
         var botBtns = uiDocument.rootVisualElement.Q<VisualElement>("botBtns");
         var topBtns = uiDocument.rootVisualElement.Q<VisualElement>("topBtns");
         var mainButtonContainer = uiDocument.rootVisualElement.Q<VisualElement>("mainButtonContainer");
