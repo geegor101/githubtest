@@ -95,6 +95,7 @@ public class LogicScriptUI : BackgroundChangeWatcher
             Debug.Log("sweetButton clicked");
             //GameManager.StartGame();
             startDocument.rootVisualElement.style.display = DisplayStyle.None;
+            WomanChanger.SelectWoman("sweet");
         };
         
         toxicButton.clicked += () =>
@@ -102,6 +103,7 @@ public class LogicScriptUI : BackgroundChangeWatcher
             Debug.Log("toxicButton clicked");
             //GameManager.StartGame();
             startDocument.rootVisualElement.style.display = DisplayStyle.None;
+            WomanChanger.SelectWoman("toxic");
         };
         
         OnHateChanged += (oldValue, newValue) =>

@@ -9,6 +9,8 @@ public class WomanWatcher : MonoBehaviour
     [SerializeField]
     private string type;
 
+    [SerializeField] private bool running;
+
     private MeshRenderer _renderer;
     
     void Start()
@@ -21,6 +23,7 @@ public class WomanWatcher : MonoBehaviour
     public void WomanChanged(string state, string type)
     {
         _renderer.enabled = type == this.type && state == this.name;
+        running = _renderer.enabled;
     }
 }
 
