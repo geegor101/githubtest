@@ -112,8 +112,11 @@ public class GameManager : MonoBehaviour
         {
             LogicScriptUI.SendDialog(s, you);
         }
-        
-        
+
+        protected static float CoefIfPast(float coefIfPast, TurnInput input, float coefIfNew = 0)
+        {
+            return pastActions.Contains(input) ? coefIfPast : coefIfNew;
+        }
     }
 
     #region Internal

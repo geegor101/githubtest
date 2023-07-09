@@ -26,7 +26,7 @@ public class LogicScriptUI : BackgroundChangeWatcher
     private Label dialog;
     public static void SendDialog(string text, bool you)
     {
-        _instance.dialog.text += $"{(you ? "You" : "Alice" )}: {text}";
+        _instance.dialog.text += $"{(you ? "You" : "Alice" )}: {text} \n";
     }
     
     private ProgressBar loveBar;
