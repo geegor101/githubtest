@@ -24,7 +24,7 @@ public class LogicScriptUI : BackgroundChangeWatcher
 
     private float _loveIntenal = 0;
     private float _hateInternal = 0;
-    
+
     /// Their value, goal is to send to 0
     public float Love
     {
@@ -70,6 +70,12 @@ public class LogicScriptUI : BackgroundChangeWatcher
     {
         _instance = this;
         uiDocument = GetComponent<UIDocument>();
+        
+        this.setDiaglogueHeader("haha");
+        this.setDialogueText("peepee");
+        
+        currentTalkInput = TalkInput.NONE;
+        currentActionInput = ActionInput.NONE;
         
         loveBar = uiDocument.rootVisualElement.Q<ProgressBar>("loveBar");
         hateBar = uiDocument.rootVisualElement.Q<ProgressBar>("hateBar");
@@ -198,8 +204,6 @@ public class LogicScriptUI : BackgroundChangeWatcher
             currentActionInput = ActionInput.NONE;
             pastActions.Add((currentTalkInput, currentActionInput));
             var currentTurn = pastActions.Count + 1;
-            
-            turnLabel.text = "Turn: " + currentTurn;
 
             attackButton.SetEnabled(false);
         };
@@ -238,10 +242,8 @@ public class LogicScriptUI : BackgroundChangeWatcher
         if (currentTalkInput != TalkInput.NONE && currentActionInput != ActionInput.NONE)
         {
             Button attackButton = uiDocument.rootVisualElement.Q<Button>("attackButton");
-            attackButton.SetEnabled(true);
+            attackButton?.SetEnabled(true);
         }
-        
-        
     }
     
     void swapFromTalkOptionsToMainOptions(List<Button> talkButtons, List<Button> mainAttackButtons, VisualElement botBtns)
@@ -269,6 +271,18 @@ public class LogicScriptUI : BackgroundChangeWatcher
    
         button.text = text;
         return button;
+    }
+    
+    public void setDialogueText(string text)
+    {
+        var dialogueText = uiDocument.rootVisualElement.Q<Label>("dialogueText");
+        dialogueText.text = text;
+    }
+    
+    public void setDiaglogueHeader(string text)
+    {
+        var dialogueHeader = uiDocument.rootVisualElement.Q<Label>("dialogueHeader");
+        dialogueHeader.text = text;
     }
     
     protected override void OnBackgroundChange(BackgroundManager.BackgroundChangeContext context, HWEventCallback callback)
