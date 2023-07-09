@@ -51,22 +51,22 @@ public class GameManager : MonoBehaviour
     [Flags]
     public enum TalkInput : uint
     {
-        NONE,
-        TALKA = 0,
-        TALKB = 1,
-        TALKC = 2,
-        TALKD = 3
+        NONE = 1,
+        TALKA = 2,
+        TALKB = 3,
+        TALKC = 4,
+        TALKD = 5
         
     }
     
     [Flags]
     public enum ActionInput : uint
     {
-        NONE,
-        ACTIONA = 0,
-        ACTIONB = 1,
-        ACTIONC = 2,
-        ACTIOND = 3
+        NONE = 1,
+        ACTIONA = 2,
+        ACTIONB = 3,
+        ACTIONC = 4,
+        ACTIOND = 5
     }
     
     /**
@@ -80,7 +80,9 @@ public class GameManager : MonoBehaviour
         {
             _weightCache = CalcWeightInternal(input);
             if (_weightCache > 0)
+            {
                 callback.AddViableResponse(this);
+            }
         }
 
         /**
