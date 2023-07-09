@@ -68,7 +68,7 @@ public class smallLove : ResponseAction
     public override void DoAction(TurnInput input)
     {
         Debug.Log("reducing love");
-        LogicScriptUI.ReduceLove(-10);
+        ReduceLove(10);
     }
 }
 
@@ -101,7 +101,7 @@ public class mediumHate : ResponseAction
 
     public override void DoAction(TurnInput input)
     {
-        LogicScriptUI.ReduceHate(10);
+        ReduceHate(10);
     }
 }
 
@@ -117,7 +117,7 @@ public class mediumLove : ResponseAction
 
     public override void DoAction(TurnInput input)
     {
-        LogicScriptUI.ReduceLove(10);
+        ReduceLove(10);
     }
 }
 
@@ -133,7 +133,7 @@ public class bigHate : ResponseAction
 
     public override void DoAction(TurnInput input)
     {
-        LogicScriptUI.ReduceHate(20);
+        ReduceHate(20);
     }
 }
 
@@ -149,7 +149,7 @@ public class bigLove : ResponseAction
 
     public override void DoAction(TurnInput input)
     {
-        LogicScriptUI.ReduceLove(20);
+        ReduceLove(20);
     }
 }
 

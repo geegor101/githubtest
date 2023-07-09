@@ -107,6 +107,13 @@ public class GameManager : MonoBehaviour
          * What to call when this action is chosen as the desired action
          */
         public abstract void DoAction(TurnInput input);
+
+        protected static void PrintToLogger(string s, bool you)
+        {
+            LogicScriptUI.SendDialog(s, you);
+        }
+        
+        
     }
 
     #region Internal
