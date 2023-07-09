@@ -26,7 +26,7 @@ public class LogicScriptUI : BackgroundChangeWatcher
     public Label actionDialog;
     public Label talkDialog;
     
-    private static LogicScriptUI _instance;
+    public static LogicScriptUI _instance;
     
     private Label dialog;
     public static void SendDialog(string text, bool you)
@@ -107,9 +107,13 @@ public class LogicScriptUI : BackgroundChangeWatcher
         OnHateChanged += (oldValue, newValue) =>
         {
             
+            if (newValue >= 50)
+                WomanChanger.ChangerIBarelyKnowHer("damaged");
+            
             //God awful code to reset state of game
             if (newValue >= 100)
             {
+                WomanChanger.ChangerIBarelyKnowHer("victory");
                 Debug.Log("You Win ");
                 Debug.Log(hateBar.value);
                 Debug.Log(newValue);
@@ -128,26 +132,8 @@ public class LogicScriptUI : BackgroundChangeWatcher
                 var winText = gameOverDocument.rootVisualElement.Q<Label>("win");
                 
                 // reset the game fr fr
-                replayButton.clicked += () =>
-                {
-                    Debug.Log("replayButton clicked");
-                    //GameManager.RestartGame();
-                    gameOverContainer.style.display = DisplayStyle.None;
-                    startDocument.rootVisualElement.style.display = DisplayStyle.Flex;
+                replayButton.clicked += ResetGameState;
 
-                    Hate = 0;
-                    Love = 0;
-                    
-                    currentTalkInput = TalkInput.NONE;
-                    currentActionInput = ActionInput.NONE;
-                    
-                    setTalkDialog("");
-                    setActionDialog("");
-                    
-                    pastActions.Clear();
-                    //TODO: clear past actions in GameManager
-                };
-                
                 //uiDocument.rootVisualElement.Q<VisualElement>("mainButtonContainer").SetEnabled(false);
             }
         };
@@ -156,31 +142,15 @@ public class LogicScriptUI : BackgroundChangeWatcher
         {
             if (newValue >= 100)
             {
+                WomanChanger.ChangerIBarelyKnowHer("loss");
+                
                 Debug.Log("You Lose ");
                 var gameOverContainer = gameOverDocument.rootVisualElement.Q<VisualElement>("gameOverContainer");
                // gameOverContainer.visible = true;
                 gameOverContainer.style.display = DisplayStyle.Flex;
                 var replayButton = gameOverDocument.rootVisualElement.Q<Button>("replayButton");
-                replayButton.clicked += () =>
-                {
-                    Debug.Log("replayButton clicked");
-                    //GameManager.RestartGame();
-                    gameOverContainer.style.display = DisplayStyle.None;
-                    startDocument.rootVisualElement.style.display = DisplayStyle.Flex;
+                replayButton.clicked += ResetGameState;
 
-                    Hate = 0;
-                    Love = 0;
-                    
-                    currentTalkInput = TalkInput.NONE;
-                    currentActionInput = ActionInput.NONE;
-                    
-                    setTalkDialog("");
-                    setActionDialog("");
-                    
-                    pastActions.Clear();
-                    //TODO: clear past actions in GameManager
-                };
-                
                 //uiDocument.rootVisualElement.Q<VisualElement>("mainButtonContainer").SetEnabled(false);
             }
         };

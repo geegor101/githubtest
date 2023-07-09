@@ -5,6 +5,7 @@ using System.Linq;
 using System.Reflection;
 using UnityEngine;
 using UnityEngine.SceneManagement;
+using UnityEngine.UIElements;
 
 public class GameManager : MonoBehaviour
 {
@@ -50,6 +51,21 @@ public class GameManager : MonoBehaviour
         Debug.Log($"Selected {responseActions.Count()} entries -- Last: {responseActions.Last()} -- All: {str}");
         responseActions.Last().DoAction(turnInput);
     }
+
+    public static void ResetGameState()
+    {
+        Debug.Log("replayButton clicked");
+        //GameManager.RestartGame();
+        
+        LogicScriptUI._instance.gameOverDocument.rootVisualElement.Q<VisualElement>("gameOverContainer").style.display 
+            = DisplayStyle.None;
+        LogicScriptUI._instance.startDocument.rootVisualElement.style.display = DisplayStyle.Flex;
+        LogicScriptUI.Hate = 0; LogicScriptUI.Love = 0;
+        LogicScriptUI._instance.currentTalkInput = TalkInput.NONE; LogicScriptUI._instance.currentActionInput = ActionInput.NONE;
+        LogicScriptUI._instance.setTalkDialog(""); LogicScriptUI._instance.setActionDialog("");
+        pastActions.Clear(); gameStatus.Clear();
+    }
+    
     
     [Flags]
     public enum TalkInput : uint

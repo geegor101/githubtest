@@ -18,6 +18,7 @@ public class WomanChanger : MonoBehaviour
 
     public static WomanChanger _womanChanger;
 
+    public static string WomanType;
     //[SerializeField] private Texture _texture;
     
     void Start()
@@ -52,15 +53,31 @@ public class WomanChanger : MonoBehaviour
         //WomanVariants.Add("", renderTexture);
     }
 
+    public static void SelectWoman(string woman)
+    {
+        WomanType = woman;
+        ChangerIBarelyKnowHer("default");
+    }
+
+    /*
+     * loss
+     * victory
+     * damaged
+     */
+    
     public static void ChangerIBarelyKnowHer(string s)
     {
         //List<Material> mats = new List<Material>();
         //mats.Add(_womanChanger.WomanVariants[s]);
         //_womanChanger._renderer.material.SetTexture("_MainTex", _womanChanger.WomanVariants[s]);
         //_womanChanger._renderer.material.mainTexture = _womanChanger.WomanVariants[s];
-        Graphics.Blit(_womanChanger.WomanVariants[s], _womanChanger._renderer.material);
+        //Graphics.Blit(_womanChanger.WomanVariants[s], _womanChanger._renderer.material);
         //_womanChanger._renderer.material.SetTexture("_MainTex", _womanChanger.WomanVariants[s]);
-        
+        OnWomanChanged?.Invoke(s, WomanType);
     }
-    
+
+    public delegate void WomanChangedDelegate(string target, string womanType);
+
+    public static event WomanChangedDelegate OnWomanChanged;
+
 }
