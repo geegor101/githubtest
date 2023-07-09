@@ -159,7 +159,6 @@ public class LogicScriptUI : BackgroundChangeWatcher
         makeCookiesForSister.clicked += () =>
         {
             Debug.Log("makeCookiesForSister Clicked");
-            loveBar.value += 0.1f;
             currentActionInput = ActionInput.ACTIONA;
             
             swapFromTalkOptionsToMainOptions(actionButtons, mainAttackButtons, botBtns);
@@ -168,7 +167,6 @@ public class LogicScriptUI : BackgroundChangeWatcher
         makeCookiesForMe.clicked += () =>
         {
             Debug.Log("makeCookiesForMe Clicked");
-            loveBar.value += 0.1f;
             currentActionInput = ActionInput.ACTIONB;
             
             swapFromTalkOptionsToMainOptions(actionButtons, mainAttackButtons, botBtns);
@@ -177,7 +175,6 @@ public class LogicScriptUI : BackgroundChangeWatcher
         spendTimeTogether.clicked += () =>
         {
             Debug.Log("spendTimeTogether Clicked");
-            loveBar.value += 0.1f;
             currentActionInput = ActionInput.ACTIONC;
             
             swapFromTalkOptionsToMainOptions(actionButtons, mainAttackButtons, botBtns);
@@ -186,25 +183,17 @@ public class LogicScriptUI : BackgroundChangeWatcher
         doNothingAction.clicked += () =>
         {
             Debug.Log("doNothingAction Clicked");
-            loveBar.value += 0.1f;
             currentActionInput = ActionInput.ACTIOND;
             
             swapFromTalkOptionsToMainOptions(actionButtons, mainAttackButtons, botBtns);
         };
         
         
-        loveBar.style.backgroundColor = Color.red;
-        loveBar.style.unityBackgroundImageTintColor = Color.red;
-        loveBar.style.color = Color.red;
-        
-        //attackButton.SetEnabled(false);
-        loveBar.value = 5f;
 
         uiDocument.rootVisualElement.Q<Button>("attackButton").clicked += () =>
         {
             Debug.Log("attackButton Clicked");
-            loveBar.value += 0.1f;
-            
+            GameManager.TakeTurn(currentTalkInput, currentActionInput);
             currentTalkInput = TalkInput.NONE;
             currentActionInput = ActionInput.NONE;
             pastActions.Add((currentTalkInput, currentActionInput));
@@ -250,7 +239,6 @@ public class LogicScriptUI : BackgroundChangeWatcher
         {
             Button attackButton = uiDocument.rootVisualElement.Q<Button>("attackButton");
             attackButton.SetEnabled(true);
-            GameManager.TakeTurn(currentTalkInput, currentActionInput);
         }
         
         

@@ -35,7 +35,13 @@ public class GameManager : MonoBehaviour
         pastActions.Add(turnInput);
         IEnumerable<ResponseAction> responseActions = callback.GetResponseActions();//.Take(2);
         if (responseActions.Count() <= 0)
+        {
+            Debug.Log("No responses found");
+            Debug.Log(talkInput);
+            Debug.Log(actionInput);
             return; //TODO Call default action here
+        }
+            
         foreach (ResponseAction responseAction in responseActions)
         {
             responseAction.DoAction(turnInput);
@@ -111,6 +117,7 @@ public class GameManager : MonoBehaviour
             if (type.IsAbstract)
                 return;
             GatherResponsesEvent += ((ResponseAction)Activator.CreateInstance(type)).CalcWeight;
+            Debug.Log($"{type.Name} loaded as a response action");
         }
     }
 

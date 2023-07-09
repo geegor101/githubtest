@@ -3,6 +3,8 @@ using System.Collections.Generic;
 using UnityEngine;
 
 using static GameManager;
+using static LogicScriptUI;
+
 
 #region GoodGirlFriendResponses
 public class smallHate : ResponseAction
@@ -25,6 +27,7 @@ public class smallLove : ResponseAction
 {
     protected override float CalcWeightInternal(TurnInput input)
     {
+        Debug.Log("help");
         // Calculate the weight based on the TalkInput and ActionInput
         // Return a negative value if the action is not valid for the given input
         float weight = -5;
@@ -51,13 +54,16 @@ public class smallLove : ResponseAction
         {
             weight *= -1;
         }
+        
+        Debug.Log("Small Love");
 
         return weight;
     }
 
     public override void DoAction(TurnInput input)
     {
-        
+        Debug.Log("reducing love");
+        LogicScriptUI.ReduceLove(10);
     }
 }
 
@@ -90,7 +96,7 @@ public class mediumHate : ResponseAction
 
     public override void DoAction(TurnInput input)
     {
-        
+        LogicScriptUI.ReduceHate(20);
     }
 }
 
@@ -141,6 +147,7 @@ public class bigLove : ResponseAction
         
     }
 }
+
 
 
 #endregion
