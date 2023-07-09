@@ -30,6 +30,7 @@ public class smallLove : ResponseAction
         Debug.Log("help");
         // Calculate the weight based on the TalkInput and ActionInput
         // Return a negative value if the action is not valid for the given input
+        /*
         float weight = -5;
         var talkInput = input.TalkInput;
         var actionInput = input.ActionInput;
@@ -57,7 +58,11 @@ public class smallLove : ResponseAction
         
         Debug.Log("Small Love");
 
+        
+        
         return weight;
+        */
+        return input.isApplicable(0b0000_0000_0100_0010) ? 5 : 0;
     }
 
     public override void DoAction(TurnInput input)
