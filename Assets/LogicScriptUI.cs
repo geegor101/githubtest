@@ -57,12 +57,14 @@ public class LogicScriptUI : BackgroundChangeWatcher
 
     public static void ReduceLove(float value)
     {
-        _instance.Love -= value;
+        if (_instance != null)
+            _instance.Love -= value;
     }
 
     public static void ReduceHate(float value)
     {
-        _instance.Hate -= value;
+        if (_instance != null)
+            _instance.Hate -= value;
     }
     
 

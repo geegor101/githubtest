@@ -24,6 +24,7 @@ public class GameManager : MonoBehaviour
     {
         LoadContextActions();
         //TakeTurn(TalkInput.TALKA, ActionInput.ACTIONA);
+        TakeTurn(TalkInput.TALKA, ActionInput.ACTIONA);
     }
     
     public static void TakeTurn(TalkInput talkInput, ActionInput actionInput)
@@ -34,20 +35,22 @@ public class GameManager : MonoBehaviour
         GatherResponsesEvent?.Invoke(turnInput, callback);
         pastActions.Add(turnInput);
         IEnumerable<ResponseAction> responseActions = callback.GetResponseActions();//.Take(2);
-        if (responseActions.Count() <= 0)
+        if (!responseActions.Any())
         {
             Debug.Log("No responses found");
             Debug.Log(talkInput);
             Debug.Log(actionInput);
             return; //TODO Call default action here
         }
-            
+        string str = "";
         foreach (ResponseAction responseAction in responseActions)
         {
-            responseAction.DoAction(turnInput);
+            str += $" {responseAction} ";
         }
-        
+        Debug.Log($"Selected {responseActions.Count()} entries -- Last: {responseActions.Last()} -- All: {str}");
+        responseActions.Last().DoAction(turnInput);
     }
+    
     [Flags]
     public enum TalkInput : uint
     {
@@ -93,6 +96,11 @@ public class GameManager : MonoBehaviour
         public float getWeightCache()
         {
             return _weightCache;
+        }
+
+        public static implicit operator string(ResponseAction action)
+        {
+            return nameof(action);
         }
         
         /**
