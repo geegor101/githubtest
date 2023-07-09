@@ -13,7 +13,7 @@ public class smallHate : ResponseAction
     {
         // Calculate the weight value on the TalkInput and ActionInput
         // Return a negative value if the action is not valid for the given input
-        float weight = 5;
+        float weight = -5;
         return weight;
     }
 
@@ -28,47 +28,47 @@ public class smallLove : ResponseAction
     protected override float CalcWeightInternal(TurnInput input)
     {
         Debug.Log("help");
-        // Calculate the weight based on the TalkInput and ActionInput
-        // Return a negative value if the action is not valid for the given input
-        /*
-        float weight = -5;
-        var talkInput = input.TalkInput;
-        var actionInput = input.ActionInput;
-        
-        if( talkInput == TalkInput.TALKC && actionInput == ActionInput.ACTIONA)
-        {
-            weight *= -1;
-        }
-        else if (talkInput == TalkInput.TALKB && actionInput == ActionInput.ACTIONB)
-        {
-            weight *= -1;
-        }
-        else if (talkInput == TalkInput.TALKB && actionInput == ActionInput.ACTIONC)
-        {
-            weight *= -1;
-        }
-        else if (talkInput == TalkInput.TALKD && actionInput == ActionInput.ACTIONB)
-        {
-            weight *= -1;
-        }
-        else if (talkInput == TalkInput.TALKD && actionInput == ActionInput.ACTIOND)
-        {
-            weight *= -1;
-        }
-        
-        Debug.Log("Small Love");
-
-        
-        
-        return weight;
-        */
-        return input.isApplicable(0b0000_0000_0100_0010) ? 5 : 0;
+         // Calculate the weight based on the TalkInput and ActionInput
+         // Return a negative value if the action is not valid for the given input
+         
+         // float weight = -5;
+         // var talkInput = input.TalkInput;
+         // var actionInput = input.ActionInput;
+         //
+         // if( talkInput == TalkInput.TALKC && actionInput == ActionInput.ACTIONA)
+         // {
+         //     weight *= -1;
+         // }
+         // else if (talkInput == TalkInput.TALKB && actionInput == ActionInput.ACTIONB)
+         // {
+         //     weight *= -1;
+         // }
+         // else if (talkInput == TalkInput.TALKB && actionInput == ActionInput.ACTIONC)
+         // {
+         //     weight *= -1;
+         // }
+         // else if (talkInput == TalkInput.TALKD && actionInput == ActionInput.ACTIONB)
+         // {
+         //     weight *= -1;
+         // }
+         // else if (talkInput == TalkInput.TALKD && actionInput == ActionInput.ACTIOND)
+         // {
+         //     weight *= -1;
+         // }
+         //
+         // Debug.Log("Small Love");
+         //
+         //
+         //
+         // return weight;
+         //
+         return input.isApplicable(0b0000_0000_0100_0010) ? 5 : 0;
     }
 
     public override void DoAction(TurnInput input)
     {
         Debug.Log("reducing love");
-        LogicScriptUI.ReduceLove(10);
+        LogicScriptUI.ReduceLove(-10);
     }
 }
 
@@ -111,7 +111,7 @@ public class mediumLove : ResponseAction
     {
         // Calculate the weight based on the TalkInput and ActionInput
         // Return a negative value if the action is not valid for the given input
-        float weight = 10;
+        float weight = -10;
         return weight;
     }
 
@@ -127,7 +127,7 @@ public class bigHate : ResponseAction
     {
         // Calculate the weight based on the TalkInput and ActionInput
         // Return a negative value if the action is not valid for the given input
-        float weight = 20;
+        float weight = -20;
         return weight;
     }
 
@@ -143,7 +143,7 @@ public class bigLove : ResponseAction
     {
         // Calculate the weight based on the TalkInput and ActionInput
         // Return a negative value if the action is not valid for the given input
-        float weight = 20;
+        float weight = -20;
         return weight;
     }
 
