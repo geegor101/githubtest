@@ -59,16 +59,17 @@ public class GameManager : MonoBehaviour
         TALKB = 3,
         TALKC = 4,
         TALKD = 5
+        
     }
     
     [Flags]
     public enum ActionInput : uint
     {
-        NONE = 1,
-        ACTIONA = 2,
-        ACTIONB = 3,
-        ACTIONC = 4,
-        ACTIOND = 5
+        NONE = 0b0000,
+        ACTIONA = 0b0001,
+        ACTIONB = 0b0010,
+        ACTIONC = 0b0100,
+        ACTIOND = 0b1000
     }
     
     /**

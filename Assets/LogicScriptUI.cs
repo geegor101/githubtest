@@ -85,6 +85,7 @@ public class LogicScriptUI : BackgroundChangeWatcher
         currentTalkInput = TalkInput.NONE;
         currentActionInput = ActionInput.NONE;
         
+        
         loveBar = uiDocument.rootVisualElement.Q<ProgressBar>("loveBar");
         hateBar = uiDocument.rootVisualElement.Q<ProgressBar>("hateBar");
         //TODO: get dialog here
@@ -116,7 +117,7 @@ public class LogicScriptUI : BackgroundChangeWatcher
         var itsNotYouItsMe = makeButton("It's not you, it's me");
         var iNeedSomeTime = makeButton("I need some time");
         var iLoveYou = makeButton("I love you");
-        var doNothing = makeButton("Nothing");
+        var doNothing = makeButton("Ignore");
         
         var talkButtons = new List<Button>();
         talkButtons.Add(itsNotYouItsMe);
@@ -127,7 +128,6 @@ public class LogicScriptUI : BackgroundChangeWatcher
         itsNotYouItsMe.clicked += () =>
         {
             Debug.Log("itsNotYouItsMe Clicked");
-            loveBar.value += 0.1f;
             currentTalkInput = TalkInput.TALKA;
 
             swapFromTalkOptionsToMainOptions(talkButtons, mainAttackButtons, botBtns);
@@ -136,7 +136,6 @@ public class LogicScriptUI : BackgroundChangeWatcher
         iNeedSomeTime.clicked += () =>
         {
             Debug.Log("iNeedSomeTime Clicked");
-            loveBar.value += 0.1f;
             currentTalkInput = TalkInput.TALKB;
             
             swapFromTalkOptionsToMainOptions(talkButtons, mainAttackButtons, botBtns);
@@ -153,7 +152,6 @@ public class LogicScriptUI : BackgroundChangeWatcher
         doNothing.clicked += () =>
         {
             Debug.Log("doNothing Clicked");
-            loveBar.value += 0.1f;
             currentTalkInput = TalkInput.TALKD;
             
             swapFromTalkOptionsToMainOptions(talkButtons, mainAttackButtons, botBtns);
@@ -161,7 +159,7 @@ public class LogicScriptUI : BackgroundChangeWatcher
         
         //Buttons for the action menu
         var makeCookiesForSister = makeButton("Make cookies for sister");
-        var makeCookiesForMe = makeButton("Make cookies for me");
+        var makeCookiesForMe = makeButton("Give Gift");
         var spendTimeTogether = makeButton("Spend time together");
         var doNothingAction = makeButton("Nothing");
         
