@@ -42,22 +42,25 @@ public class GameManager : MonoBehaviour
         }
         
     }
-    public enum TalkInput
+    [Flags]
+    public enum TalkInput : byte
     {
-        NONE,
-        TALKA,
-        TALKB,
-        TALKC,
-        TALKD
+        NONE = 0b0000,
+        TALKA = 0b0001,
+        TALKB = 0b0010,
+        TALKC = 0b0100,
+        TALKD = 0b1000
+        
     }
     
-    public enum ActionInput
+    [Flags]
+    public enum ActionInput : byte
     {
-        NONE,
-        ACTIONA,
-        ACTIONB,
-        ACTIONC,
-        ACTIOND
+        NONE = 0b0000,
+        ACTIONA = 0b0001,
+        ACTIONB = 0b0010,
+        ACTIONC = 0b0100,
+        ACTIOND = 0b1000
     }
     
     /**
@@ -101,6 +104,17 @@ public class GameManager : MonoBehaviour
         {
             TalkInput = talkInput;
             ActionInput = actionInput;
+        }
+        /*
+        public static implicit operator int(TurnInput input)
+        {
+            return ((byte)input.TalkInput << 4) | (byte)input.ActionInput;
+        }
+        */
+
+        public bool isApplicable(byte talkMask, byte actionMask)
+        {
+            return ((talkMask & (byte)TalkInput) > 0) && ((actionMask & (byte)ActionInput) > 0);
         }
     }
 
