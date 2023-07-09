@@ -59,7 +59,6 @@ public class GameManager : MonoBehaviour
         TALKB = 3,
         TALKC = 4,
         TALKD = 5
-        
     }
     
     [Flags]
