@@ -14,6 +14,11 @@ public class LogicScriptUI : BackgroundChangeWatcher
 {
     // Start is called before the first frame update
     private UIDocument uiDocument;
+    public UIDocument gameOverDocument;
+    public UIDocument gameWinDocument;
+    public UIDocument gameStartDocument;
+    public UIDocument startDocument;
+    
     public TalkInput currentTalkInput = TalkInput.NONE;
     public ActionInput currentActionInput = ActionInput.NONE;
     public List<(TalkInput, ActionInput)> pastActions = new List<(TalkInput, ActionInput)>();
@@ -76,17 +81,120 @@ public class LogicScriptUI : BackgroundChangeWatcher
             Hate -= value;
     }
     
+    
+    
 
     void Start()
     {
+        
+        var sweetButton = startDocument.rootVisualElement.Q<Button>("sweetButton");
+        var toxicButton = startDocument.rootVisualElement.Q<Button>("toxicButton");
+        
+        sweetButton.clicked += () =>
+        {
+            Debug.Log("sweetButton clicked");
+            //GameManager.StartGame();
+            startDocument.rootVisualElement.style.display = DisplayStyle.None;
+        };
+        
+        toxicButton.clicked += () =>
+        {
+            Debug.Log("toxicButton clicked");
+            //GameManager.StartGame();
+            startDocument.rootVisualElement.style.display = DisplayStyle.None;
+        };
+        
+        OnHateChanged += (oldValue, newValue) =>
+        {
+            
+            //God awful code to reset state of game
+            if (newValue >= 100)
+            {
+                Debug.Log("You Win ");
+                Debug.Log(hateBar.value);
+                Debug.Log(newValue);
+                var gameOverContainer = gameOverDocument.rootVisualElement.Q<VisualElement>("gameOverContainer");
+                // gameOverContainer.visible = true;
+                gameOverContainer.style.display = DisplayStyle.Flex;
+                gameOverContainer.style.backgroundColor = new StyleColor(new Color(0.5f, 0.5f, 0.5f, 1));
+
+                //Dynaimcallly change background, will need to make it so that it changes to the correct one
+                //Based on which boss you are fighting
+                gameOverContainer.style.backgroundImage = new StyleBackground(AssetDatabase.LoadAssetAtPath<Texture2D>("Assets/Background/BreakupHard.png"));
+                
+                var replayButton = gameOverDocument.rootVisualElement.Q<Button>("replayButton");
+                replayButton.text = "Play Again!";
+                
+                var winText = gameOverDocument.rootVisualElement.Q<Label>("win");
+                
+                // reset the game fr fr
+                replayButton.clicked += () =>
+                {
+                    Debug.Log("replayButton clicked");
+                    //GameManager.RestartGame();
+                    gameOverContainer.style.display = DisplayStyle.None;
+                    startDocument.rootVisualElement.style.display = DisplayStyle.Flex;
+
+                    Hate = 0;
+                    Love = 0;
+                    
+                    currentTalkInput = TalkInput.NONE;
+                    currentActionInput = ActionInput.NONE;
+                    
+                    setTalkDialog("");
+                    setActionDialog("");
+                    
+                    pastActions.Clear();
+                    //TODO: clear past actions in GameManager
+                };
+                
+                //uiDocument.rootVisualElement.Q<VisualElement>("mainButtonContainer").SetEnabled(false);
+            }
+        };
+        
+        OnLoveChanged += (oldValue, newValue) =>
+        {
+            if (newValue >= 100)
+            {
+                Debug.Log("You Lose ");
+                var gameOverContainer = gameOverDocument.rootVisualElement.Q<VisualElement>("gameOverContainer");
+               // gameOverContainer.visible = true;
+                gameOverContainer.style.display = DisplayStyle.Flex;
+                var replayButton = gameOverDocument.rootVisualElement.Q<Button>("replayButton");
+                replayButton.clicked += () =>
+                {
+                    Debug.Log("replayButton clicked");
+                    //GameManager.RestartGame();
+                    gameOverContainer.style.display = DisplayStyle.None;
+                    startDocument.rootVisualElement.style.display = DisplayStyle.Flex;
+
+                    Hate = 0;
+                    Love = 0;
+                    
+                    currentTalkInput = TalkInput.NONE;
+                    currentActionInput = ActionInput.NONE;
+                    
+                    setTalkDialog("");
+                    setActionDialog("");
+                    
+                    pastActions.Clear();
+                    //TODO: clear past actions in GameManager
+                };
+                
+                //uiDocument.rootVisualElement.Q<VisualElement>("mainButtonContainer").SetEnabled(false);
+            }
+        };
+        
+        
         _instance = this;
         uiDocument = GetComponent<UIDocument>();
         
-        this.setDiaglogueHeader("haha");
-        this.setDialogueText("peepee");
         
         currentTalkInput = TalkInput.NONE;
         currentActionInput = ActionInput.NONE;
+        
+        var replayButton = uiDocument.rootVisualElement.Q<Button>("replayButton");
+       
         
         
         loveBar = uiDocument.rootVisualElement.Q<ProgressBar>("loveBar");
@@ -223,7 +331,11 @@ public class LogicScriptUI : BackgroundChangeWatcher
             currentActionInput = ActionInput.NONE;
             pastActions.Add((currentTalkInput, currentActionInput));
             var currentTurn = pastActions.Count + 1;
+            setTalkDialog("");
+            setActionDialog("");
 
+            Love += 5; // TODO: change this for balancing if necessary.
+            
             attackButton.SetEnabled(false);
         };
         

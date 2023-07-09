@@ -1,0 +1,9 @@
+<ui:UXML xmlns:ui="UnityEngine.UIElements" xmlns:uie="UnityEditor.UIElements" editor-extension-mode="False">
+    <ui:VisualElement style="flex-grow: 1; background-color: rgb(178, 92, 92); background-image: url(&apos;project://database/Assets/Background/DatingEasy.png?fileID=2800000&amp;guid=63f22d077213a3d4aa1e1a3e16652e4c&amp;type=3#DatingEasy&apos;); display: none;">
+        <ui:VisualElement name="gameOverContainers" style="flex-grow: 1; background-color: rgba(0, 0, 0, 0); align-self: center; align-items: center; justify-content: flex-start; font-size: 100px; visibility: visible; margin-top: 150px; display: flex; overflow: visible; flex-direction: row; max-width: initial; max-height: initial; height: auto;">
+            <ui:VisualElement name="gameOverContainer" style="flex-grow: 0.2; background-color: rgba(248, 247, 247, 0); align-self: flex-end; justify-content: center; border-left-width: 0; border-right-width: 0; border-top-width: 0; border-bottom-width: 0; border-left-color: rgb(0, 0, 0); border-right-color: rgb(0, 0, 0); border-top-color: rgb(0, 0, 0); border-bottom-color: rgb(0, 0, 0); padding-left: 20px; padding-right: 20px; padding-top: 20px; padding-bottom: 20px; visibility: visible; margin-top: 0; display: flex; align-items: center; max-height: 150px;">
+                <ui:Button text="Play Again?" display-tooltip-when-elided="true" name="replayButton" style="display: flex; font-size: 70px;" />
+            </ui:VisualElement>
+        </ui:VisualElement>
+    </ui:VisualElement>
+</ui:UXML>
