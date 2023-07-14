@@ -1,6 +1,8 @@
 ﻿using System;
+using FishNet;
 using FishNet.Managing;
 using UnityEngine;
+using UnityEngine.InputSystem;
 
 namespace Managers
 {
@@ -8,7 +10,8 @@ namespace Managers
     public class GameManager : MonoBehaviour
     {
         public static GameManager _instance { get; private set; }
-        
+
+        [SerializeField] private InputActionAsset _inputActionAsset;
         
         [SerializeField]
         public NetworkManager _manager;
@@ -29,6 +32,16 @@ namespace Managers
                 //_manager.ServerManager.StartConnection();
                 //_manager.ClientManager.StartConnection();
             }
+            //if (InstanceFinder.IsClient)
+                ClientInit();
+        }
+
+
+        private void ClientInit()
+        {
+            InputManager.Init(_inputActionAsset);
         }
     }
+    
+    
 }
