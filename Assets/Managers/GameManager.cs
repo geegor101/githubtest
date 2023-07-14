@@ -40,6 +40,8 @@ namespace Managers
         private void ClientInit()
         {
             InputManager.Init(_inputActionAsset);
+            
+            //InputManager.SetFocus("GAME");
         }
     }
     

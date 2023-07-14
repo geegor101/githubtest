@@ -1730,16 +1730,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 9014151dce9801645a64409538961574, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  _moveAction:
-    m_Name: Move
-    m_Type: 0
-    m_ExpectedControlType: Vector3
-    m_Id: 60348366-01e5-4c13-a0b7-d7eeb0061513
-    m_Processors: 
-    m_Interactions: 
-    m_SingletonActionBindings: []
-    m_Flags: 0
   _speed: 5
+  _camera: {fileID: 963194227}
 --- !u!1 &1684190350
 GameObject:
   m_ObjectHideFlags: 0

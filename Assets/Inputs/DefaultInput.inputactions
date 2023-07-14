@@ -2,7 +2,7 @@
     "name": "DefaultInput",
     "maps": [
         {
-            "name": "KBM",
+            "name": "GAME",
             "id": "85dc2746-1a86-4f0b-a4b9-3d9cc9a14a2e",
             "actions": [
                 {
@@ -134,6 +134,62 @@
                     "action": "Movement",
                     "isComposite": false,
                     "isPartOfComposite": true
+                }
+            ]
+        },
+        {
+            "name": "UI",
+            "id": "a2f6c298-3c38-420e-8ca6-4eaf4686c0ec",
+            "actions": [
+                {
+                    "name": "New action",
+                    "type": "Button",
+                    "id": "a31183f3-99bf-4816-8d86-cbeeeadef0d1",
+                    "expectedControlType": "Button",
+                    "processors": "",
+                    "interactions": "",
+                    "initialStateCheck": false
+                }
+            ],
+            "bindings": [
+                {
+                    "name": "",
+                    "id": "c6c5595c-742d-40cf-932f-a39d7ec5ca2a",
+                    "path": "",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "",
+                    "action": "New action",
+                    "isComposite": false,
+                    "isPartOfComposite": false
+                }
+            ]
+        },
+        {
+            "name": "DEBUG",
+            "id": "1b3a296e-528a-4133-bf8e-ddd06bd4d96e",
+            "actions": [
+                {
+                    "name": "ToggleFocus",
+                    "type": "Button",
+                    "id": "370f53f8-7392-45f4-a48b-e12d6f7c6ba1",
+                    "expectedControlType": "Button",
+                    "processors": "",
+                    "interactions": "",
+                    "initialStateCheck": false
+                }
+            ],
+            "bindings": [
+                {
+                    "name": "",
+                    "id": "1bb75a9b-b3a5-402a-b455-893a86e3c4c2",
+                    "path": "<Keyboard>/alt",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "",
+                    "action": "ToggleFocus",
+                    "isComposite": false,
+                    "isPartOfComposite": false
                 }
             ]
         }

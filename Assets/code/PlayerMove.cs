@@ -25,8 +25,10 @@ public class PlayerMove : VGTBehavior
     {
         base.Start();
 
-        _moveAction = InputManager.GetInputAction("KBM/Movement");
-        _lookAction = InputManager.GetInputAction("KBM/Look");
+        _moveAction = InputManager.GetInputAction("GAME/Movement");
+        _lookAction = InputManager.GetInputAction("GAME/Look");
+        InputManager.QuickAddInput("DEBUG/ToggleFocus", FocusToggle);
+
         //InputManager.QuickAddInput("KBM/Movement", MovementEvent);
         //_moveAction.performed += MovementEvent;
         //InputManager.GetInputAction().canceled
@@ -43,6 +45,17 @@ public class PlayerMove : VGTBehavior
         
     }
     */
+
+    private void FocusToggle(InputAction.CallbackContext context)
+    {
+        switch (InputManager.Focus)
+        {
+            case "GAME" : InputManager.Focus = "UI";
+                break;
+            case "UI" : InputManager.Focus = "GAME";
+                break;
+        }
+    }
     
     void Update()
     {
