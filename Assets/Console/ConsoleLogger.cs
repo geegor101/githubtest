@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Linq.Expressions;
 using System.Reflection;
 using FishNet;
 using FishNet.Broadcast;
@@ -77,21 +78,49 @@ namespace Console
         #region Call/Add CMDs
         
         private static readonly Dictionary<string, MethodInfo> _commands = new Dictionary<string, MethodInfo>();
+        
 
         private static void addDefaultCommands()
         {
-            foreach (Type type in Assembly.GetExecutingAssembly().GetTypes().Where(type => type.IsDefined(typeof(Commands.CommandHolderAttribute))))
+            MethodInfo cache = null;
+            foreach (Type type in Assembly.GetExecutingAssembly().GetTypes().Where(type => type.IsDefined(typeof(CommandHolderAttribute))))
             {
-                foreach (MethodInfo methodInfo in type.GetMethods().Where(info => info.IsDefined(typeof(Commands.CommandAttribute))))
+                MethodInfo[] methodInfos = type.GetMethods();
+                foreach (MethodInfo methodInfo in methodInfos.Where(info => info.IsDefined(typeof(CommandAttribute))))
                 {
+                    //TODO: Make this use the new system
                     addCommand(methodInfo);
+                    cache = methodInfo;
+
+                    if (methodInfo.IsDefined(typeof(CommandOverloadedAttribute)))
+                    {
+                        
+                    }
+                    else
+                    {
+                        
+                    }
+
+                }
+                
+                foreach (MethodInfo methodInfo in methodInfos.Where(info => info.IsDefined(typeof(ParserAttribute))))
+                {
+                    Parsers.AddParser(methodInfo);
                 }
             }
+            var a = new SingleInvokerCommandInfo(Delegate.CreateDelegate(Expression.GetActionType(cache
+                .GetParameters()
+                .Select(info => info.ParameterType).ToArray()), cache));
+            a.Invoke(new []{"3", "4", "5"});
+            /*
+            Debug.Log($"{Parsers.TryParse<string>(new []{"Generic Parse Worked!"})}");
+            Debug.Log($"{Parsers.getValue(typeof(string), new []{"Non generic worked!"})}");
+            */
         }
 
         private static bool callCommandC(string command, string[] args, CommandCallInfo info)
         {
-            if (_commands.ContainsKey(command) && _commands[command].GetCustomAttribute<Commands.CommandAttribute>() is { } attribute)
+            if (_commands.ContainsKey(command) && _commands[command].GetCustomAttribute<CommandAttribute>() is { } attribute)
             {
                 //Debug.Log($"{attribute.isClient} C:S {attribute.isServer}, {attribute.permissionLevel}");
                 if (attribute.isClient)
@@ -104,20 +133,21 @@ namespace Console
         
         private static void callCommandS(string command, string[] args, CommandCallInfo info)
         {
-
-
             if (_commands.ContainsKey(command))
             {
                 invokeCommand(command, args, info);
             }
         }
+        
+        //TODO: Add metadata here
 
         private static void addCommand(MethodInfo action)
         {
-            var cmd = Commands.CommandAttribute.GetCommandAttribute(action);
+            var cmd = CommandAttribute.GetCommandAttribute(action);
             if (_commands.ContainsKey(cmd.name))
-                Debug.LogWarning($"Command : {cmd.name} : is registered and being overwritten!");
+                Debug.LogWarning($"Command : {cmd.name} : is registered and being overwritten! Try adding the OverloadedCommand attribute!");
             _commands[cmd.name] = action;
+            //action.GetParameters().Where(info => info.GetType())
         }
         
         private void sendChatClient(string message)
@@ -146,7 +176,7 @@ namespace Console
         private static void invokeCommand(string command, string[] args, CommandCallInfo info)
         {
             if (info.conn != null && !PermissionHandler.PlayerHasPermission(_commands[command]
-                    .GetCustomAttribute<Commands.CommandAttribute>().permissionLevel, info.conn))
+                    .GetCustomAttribute<CommandAttribute>().permissionLevel, info.conn))
             {
                 Commands.NoPermissionError(args, info);
                 return;
@@ -220,6 +250,49 @@ namespace Console
             {
                 //TODO: fix
                 return true;// Connections.Contains(id);
+            }
+            
+        }
+
+        public abstract class CommandInfo
+        {
+            public abstract void Invoke(string[] input);
+            
+            
+        }
+        
+        public class SingleInvokerCommandInfo : CommandInfo
+        {
+            
+            private Delegate _delegate;
+
+            public SingleInvokerCommandInfo(Delegate @delegate)
+            {
+                _delegate = @delegate;
+            }
+
+            public override void Invoke(string[] input)
+            {
+                //MethodInfo methodInfo = _delegate.GetMethodInfo();
+                ParameterInfo[] parameters = _delegate.GetMethodInfo().GetParameters();
+                object[] output = new object[parameters.Length];
+                int paramNumber = 0;
+                int len = 0;
+                try
+                {
+                    for (int i = 0; i < input.Length; i+=len)
+                    {
+                        //len = parameters[paramNumber].GetCustomAttribute<ParserAttribute>().Strings;
+                        len = Parsers.GetLength(parameters[paramNumber].ParameterType);
+                        output[paramNumber] = Parsers.getValue(parameters[paramNumber].ParameterType, input[i..(i+len)]);
+                        paramNumber++;
+                    }
+                    _delegate.DynamicInvoke(output);
+                }
+                catch (Exception e)
+                {
+                    // ignored
+                }
             }
             
         }

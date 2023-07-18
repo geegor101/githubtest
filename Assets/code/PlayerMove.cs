@@ -2,13 +2,14 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using code;
+using FishNet.Object;
 using Managers;
 using UnityEngine;
 using UnityEngine.InputSystem;
 
 
 [RequireComponent(typeof(Rigidbody))]
-public class PlayerMove : VGTBehavior
+public class PlayerMove : MonoBehaviour
 {
 
     //[SerializeField] private InputActionAsset _inputActionAsset;
@@ -21,18 +22,12 @@ public class PlayerMove : VGTBehavior
 
     [SerializeField] private Camera _camera;
     
-    protected new void Start()
+    protected void Start()
     {
-        base.Start();
-
+        this.AutofillAttributes();
         _moveAction = InputManager.GetInputAction("GAME/Movement");
         _lookAction = InputManager.GetInputAction("GAME/Look");
         InputManager.QuickAddInput("DEBUG/ToggleFocus", FocusToggle);
-
-        //InputManager.QuickAddInput("KBM/Movement", MovementEvent);
-        //_moveAction.performed += MovementEvent;
-        //InputManager.GetInputAction().canceled
-        
     }
 
     /*
@@ -48,13 +43,12 @@ public class PlayerMove : VGTBehavior
 
     private void FocusToggle(InputAction.CallbackContext context)
     {
-        switch (InputManager.Focus)
+        InputManager.Focus = InputManager.Focus switch
         {
-            case "GAME" : InputManager.Focus = "UI";
-                break;
-            case "UI" : InputManager.Focus = "GAME";
-                break;
-        }
+            "GAME" => "UI",
+            "UI" => "GAME",
+            _ => InputManager.Focus
+        };
     }
     
     void Update()
@@ -93,7 +87,10 @@ public class PlayerMove : VGTBehavior
 
         output.x = input.x;
         output.z = input.y;
-        
-        _rigidbody.velocity = output;
+
+        //output *= _rigidbody.rotation;
+        //_rigidbody.rotation.
+        //_rigidbody.velocity = output;
+        _rigidbody.AddRelativeForce(output, ForceMode.Impulse);
     }
 }

@@ -17,9 +17,8 @@ namespace Managers
             {
                 if (_focus == value)
                     return;
-                FocusChangedEvent?.Invoke(_focus, value);
-                _focus = value;
                 SetFocus(value);
+                _focus = value;
             }
         }
 
@@ -30,8 +29,12 @@ namespace Managers
             _InputActionAsset = inputActionAsset;
             inputActionAsset.Enable();
             Focus = "UI";
-            //_InputActionAsset.FindActionMap().Disable();
+            FocusChangedEvent += CursorLocker;
+        }
 
+        private static void CursorLocker(string oldFocus, string newFocus)
+        {
+            Cursor.lockState = newFocus == "GAME" ? CursorLockMode.Locked : CursorLockMode.None;
         }
 
         public static InputAction GetInputAction(string id)
@@ -50,6 +53,7 @@ namespace Managers
         
         private static void SetFocus(string focus)
         {
+            FocusChangedEvent?.Invoke(_focus, focus);
             if (_InputActionAsset == null)
                 return;
             foreach (InputActionMap actionMap in _InputActionAsset.actionMaps)
