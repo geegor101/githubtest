@@ -98,36 +98,12 @@ namespace Console
         }
 
         [Command("vector3test", true, true)]
-        public static void Vector3Test(Vector3 vector3, [CommandParameterLength(2)] int[] ints, ConsoleLogger.CommandCallInfo info)
+        public static void Vector3Test(Vector3 vector3, [CommandParameterLength(-2)] int[] ints, ConsoleLogger.CommandCallInfo info)
         {
             Debug.Log($"({vector3.x}, {vector3.y}, {vector3.z}) {ints.Length}");
         }
         
-        [Parser]
-        public static string StringParser(string[] strings, ConsoleLogger.CommandCallInfo info)
-        {
-            if (strings.Length == 0)
-                return "";
-            return strings[0];
-        }
-
-        [Parser(3)]
-        public static Vector3 Vector3Parser(string[] strings, ConsoleLogger.CommandCallInfo info)
-        {
-            return new Vector3(float.Parse(strings[0]), float.Parse(strings[1]), float.Parse(strings[2]));
-        }
-
-        [Parser]
-        public static int Int32Parser(string[] strings, ConsoleLogger.CommandCallInfo info)
-        {
-            return int.Parse(strings[0]);
-        }
         
-        [Parser]
-        public static float FloatParser(string[] strings, ConsoleLogger.CommandCallInfo info)
-        {
-            return float.Parse(strings[0]);
-        }
 
         public enum DebugEnabled
         {

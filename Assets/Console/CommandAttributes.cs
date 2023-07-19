@@ -109,21 +109,12 @@ namespace Console
             
             parsers[methodInfo.ReturnType] =
                 new ParameterParser(
-                    //(ParserDelegate)methodInfo.CreateDelegate(typeof(ParserDelegate)), 
                     Delegate.CreateDelegate(Expression.GetFuncType(
                         typeof(string[]), typeof(ConsoleLogger.CommandCallInfo), methodInfo.ReturnType
                         ), methodInfo),
                     methodInfo.GetCustomAttribute<ParserAttribute>().Strings);
-            
         }
 
-        public static event TestDel ev;
-        
-        
-        public delegate object ParserDelegate(string[] s);
-
-        public delegate void TestDel(string[] s, ref dynamic value);
-        
         internal static Object getValue(Type type, string[] input, ConsoleLogger.CommandCallInfo info)
         {
             if (parsers.ContainsKey(type))
@@ -186,7 +177,7 @@ namespace Console
                     {
                         if (!isLast)
                             throw new CommandParseException("Trailing arrays must be at the end of commands");
-                        upper = Int32.MaxValue;
+                        upper = 999999;
                     }
                     length = Math.Abs(paramLength) * GetLength(info.ParameterType.GetElementType());
                 }
@@ -200,20 +191,7 @@ namespace Console
             lower += length;
             upper += length;
         }
-        
 
-        /// <summary>
-        /// Deprecated
-        /// </summary>
-        internal static object TryParse<T>(string[] input)
-        {
-            if (parsers.TryGetValue(typeof(T), out ParameterParser parserDelegate))
-            {
-                //return parserDelegate.ParserDelegate.Invoke(input);
-            }
-            throw new CommandParseException($"Type could not be parsed: {nameof(T)}");
-        }
-        
     }
 
     internal class ParameterParser

@@ -111,7 +111,7 @@ namespace Console
             var a = new SingleInvokerCommandInfo(Delegate.CreateDelegate(Expression.GetActionType(cache
                 .GetParameters()
                 .Select(info => info.ParameterType).ToArray()), cache));
-            a.Invoke(new []{"3", "4", "5", "6", "2"});
+            a.Invoke(new []{"3", "4", "5", "6", "2", "5", "4"});
             /*
             Debug.Log($"{Parsers.TryParse<string>(new []{"Generic Parse Worked!"})}");
             Debug.Log($"{Parsers.getValue(typeof(string), new []{"Non generic worked!"})}");
@@ -314,6 +314,8 @@ namespace Console
                                     commandCallInfo), j);
                             }
                             output[paramNumber] = arr;
+                            if (paramLength < 1)
+                                break;
                         }
                         else
                         {
