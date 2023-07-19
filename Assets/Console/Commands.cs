@@ -92,21 +92,19 @@ namespace Console
 
         
         [Command("tester", true, true)]
-        public static void TestCommand(string s)
+        public static void TestCommand(string s, int[] ints, ConsoleLogger.CommandCallInfo info)
         {
-            Debug.Log($"Command sent: {s}");
+            Debug.Log($"Command sent: {s}, {ints.Length}");
         }
 
         [Command("vector3test", true, true)]
-        public static void Vector3Test(Holder<Vector3> holder)
+        public static void Vector3Test(Vector3 vector3, [CommandParameterLength(2)] int[] ints, ConsoleLogger.CommandCallInfo info)
         {
-            Vector3 vector3 = holder.Value;
-            Debug.Log($"({vector3.x}, {vector3.y}, {vector3.z})");
+            Debug.Log($"({vector3.x}, {vector3.y}, {vector3.z}) {ints.Length}");
         }
-
         
         [Parser]
-        public static string StringParser(string[] strings)
+        public static string StringParser(string[] strings, ConsoleLogger.CommandCallInfo info)
         {
             if (strings.Length == 0)
                 return "";
@@ -114,13 +112,22 @@ namespace Console
         }
 
         [Parser(3)]
-        public static Holder<Vector3> Vector3Parser(string[] strings)
+        public static Vector3 Vector3Parser(string[] strings, ConsoleLogger.CommandCallInfo info)
         {
-            return Holder<Vector3>.Of(new Vector3(float.Parse(strings[0]), float.Parse(strings[1]), float.Parse(strings[2])));
+            return new Vector3(float.Parse(strings[0]), float.Parse(strings[1]), float.Parse(strings[2]));
+        }
+
+        [Parser]
+        public static int Int32Parser(string[] strings, ConsoleLogger.CommandCallInfo info)
+        {
+            return int.Parse(strings[0]);
         }
         
-        
-        
+        [Parser]
+        public static float FloatParser(string[] strings, ConsoleLogger.CommandCallInfo info)
+        {
+            return float.Parse(strings[0]);
+        }
 
         public enum DebugEnabled
         {

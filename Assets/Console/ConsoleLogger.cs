@@ -111,7 +111,7 @@ namespace Console
             var a = new SingleInvokerCommandInfo(Delegate.CreateDelegate(Expression.GetActionType(cache
                 .GetParameters()
                 .Select(info => info.ParameterType).ToArray()), cache));
-            a.Invoke(new []{"3", "4", "5"});
+            a.Invoke(new []{"3", "4", "5", "6", "2"});
             /*
             Debug.Log($"{Parsers.TryParse<string>(new []{"Generic Parse Worked!"})}");
             Debug.Log($"{Parsers.getValue(typeof(string), new []{"Non generic worked!"})}");
@@ -265,14 +265,18 @@ namespace Console
         {
             
             private Delegate _delegate;
+            private Range _range;
 
             public SingleInvokerCommandInfo(Delegate @delegate)
             {
                 _delegate = @delegate;
+                _range = _delegate.GetMethodInfo().GetParameters().GetRange();
             }
 
             public override void Invoke(string[] input)
             {
+                CommandCallInfo commandCallInfo = new CommandCallInfo();
+                
                 //MethodInfo methodInfo = _delegate.GetMethodInfo();
                 ParameterInfo[] parameters = _delegate.GetMethodInfo().GetParameters();
                 object[] output = new object[parameters.Length];
@@ -280,21 +284,53 @@ namespace Console
                 int len = 0;
                 try
                 {
+                    //Check length here
+                    if (_range.Start.Value > input.Length || _range.End.Value < input.Length)
+                        throw new CommandParseException($"Number of args does not match for called command {input.Length} is not within {_range.Start.Value} and {_range.End.Value}");
+                    
+                    ParameterInfo current;
                     for (int i = 0; i < input.Length; i+=len)
                     {
-                        //len = parameters[paramNumber].GetCustomAttribute<ParserAttribute>().Strings;
-                        len = Parsers.GetLength(parameters[paramNumber].ParameterType);
-                        output[paramNumber] = Parsers.getValue(parameters[paramNumber].ParameterType, input[i..(i+len)]);
+                        current = parameters[paramNumber];
+                        
+                        if (current.ParameterType.IsArray && current.IsDefined(typeof(CommandParameterLengthAttribute)))
+                        {
+                            int paramLength = current.GetCustomAttribute<CommandParameterLengthAttribute>().range;
+                            int length = Parsers.GetLength(current.ParameterType.GetElementType());
+                            int numberOut = paramLength;
+                            if (paramLength < 1)
+                            {
+                                int num = input.Length - i;
+                                if (num % length != 0 || num / length < - paramLength)
+                                    throw new CommandParseException($"Incorrect number of trailing parameters, {num} is not divisible by {length}, " +
+                                                                    $"or {num / length} was too few operations, {-paramLength} required.");
+                                numberOut = num / length;
+                            }
+                            var arr = Array.CreateInstance(current.ParameterType.GetElementType(), numberOut);
+                            for (int j = 0; j < numberOut; j++)
+                            {
+                                arr.SetValue(Parsers.getValue(current.ParameterType.GetElementType(), 
+                                    input[(i + j * length)..(i + j * length + length)],
+                                    commandCallInfo), j);
+                            }
+                            output[paramNumber] = arr;
+                        }
+                        else
+                        {
+                            len = Parsers.GetLength(current.ParameterType);
+                            output[paramNumber] = Parsers.getValue(current.ParameterType, input[i..(i+len)], commandCallInfo);
+                        }
                         paramNumber++;
                     }
+                    output[^1] = commandCallInfo;
                     _delegate.DynamicInvoke(output);
                 }
                 catch (Exception e)
                 {
+                    Debug.LogWarning(e);
                     // ignored
                 }
             }
-            
         }
     }
     
