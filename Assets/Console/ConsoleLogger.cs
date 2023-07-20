@@ -1,8 +1,10 @@
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
 using System.Linq.Expressions;
 using System.Reflection;
+using System.Threading;
 using FishNet;
 using FishNet.Broadcast;
 using FishNet.Connection;
@@ -11,6 +13,8 @@ using FishNet.Object;
 using JetBrains.Annotations;
 using TMPro;
 using UnityEngine;
+using UnityEngine.Serialization;
+using Debug = UnityEngine.Debug;
 using Object = System.Object;
 
 namespace Console
@@ -19,26 +23,26 @@ namespace Console
     public class ConsoleLogger : MonoBehaviour
     {
 
-        [SerializeField]
-        private TMP_Text _text;
+        [FormerlySerializedAs("_text")] [SerializeField]
+        private TMP_Text text;
     
-        [SerializeField]
-        private TMP_InputField _input;
+        [FormerlySerializedAs("_input")] [SerializeField]
+        private TMP_InputField input;
 
         private static ConsoleLogger _instance;
+
+        public delegate void CommandLoadedDelegate();
+
+        public static event CommandLoadedDelegate OnCommandsLoaded;
 
         #region MONO-B
 
         private void Start()
         {
-            
-            //_manager = GetComponent<NetworkManager>();
             _instance = this;
-            _input.onSubmit.AddListener(sendChatClient);
-            addDefaultCommands();
-            
+            input.onSubmit.AddListener(SendChatClient);
+            CollectCommands();
             Debug.Log("Console Loaded!");
-            
         }
         
         private void OnEnable()
@@ -70,56 +74,41 @@ namespace Console
 
             msg +=  $": {DateTime.Now.Hour}:{DateTime.Now.Minute}:{DateTime.Now.Second}] {condition} </color>\n";
             
-            _text.text += msg;
+            text.text += msg;
         }
         
         #endregion
 
         #region Call/Add CMDs
         
-        private static readonly Dictionary<string, MethodInfo> _commands = new Dictionary<string, MethodInfo>();
+        private static readonly Dictionary<string, CommandInfo> Commands = new Dictionary<string, CommandInfo>();
         
 
-        private static void addDefaultCommands()
+        private static void CollectCommands()
         {
-            MethodInfo cache = null;
-            foreach (Type type in Assembly.GetExecutingAssembly().GetTypes().Where(type => type.IsDefined(typeof(CommandHolderAttribute))))
+            List<MethodInfo> holders =
+                Assembly.GetExecutingAssembly().GetTypes()
+                .Where(type => type.IsDefined(typeof(CommandHolderAttribute)))
+                .SelectMany(type => type.GetMethods())
+                .Where(info => info.IsDefined(typeof(ConsoleAttribute)))
+                .ToList();
+            
+            foreach (MethodInfo methodInfo in holders.Where(info => info.IsDefined(typeof(ParserAttribute))))
             {
-                MethodInfo[] methodInfos = type.GetMethods();
-                foreach (MethodInfo methodInfo in methodInfos.Where(info => info.IsDefined(typeof(CommandAttribute))))
-                {
-                    //TODO: Make this use the new system
-                    addCommand(methodInfo);
-                    cache = methodInfo;
-
-                    if (methodInfo.IsDefined(typeof(CommandOverloadedAttribute)))
-                    {
-                        
-                    }
-                    else
-                    {
-                        
-                    }
-
-                }
-                
-                foreach (MethodInfo methodInfo in methodInfos.Where(info => info.IsDefined(typeof(ParserAttribute))))
-                {
-                    Parsers.AddParser(methodInfo);
-                }
+                Parsers.AddParser(methodInfo);
             }
-            var a = new SingleInvokerCommandInfo(Delegate.CreateDelegate(Expression.GetActionType(cache
-                .GetParameters()
-                .Select(info => info.ParameterType).ToArray()), cache));
-            a.Invoke(new []{"3", "4", "5", "6", "2", "5", "4"});
-            /*
-            Debug.Log($"{Parsers.TryParse<string>(new []{"Generic Parse Worked!"})}");
-            Debug.Log($"{Parsers.getValue(typeof(string), new []{"Non generic worked!"})}");
-            */
+            
+            foreach (MethodInfo methodInfo in holders.Where(info => info.IsDefined(typeof(CommandAttribute))))
+            {
+                AddCommand(methodInfo);
+            }
+            
+            OnCommandsLoaded?.Invoke();
         }
 
-        private static bool callCommandC(string command, string[] args, CommandCallInfo info)
+        private static bool CallCommandC(string command, string[] args, CommandCallInfo info)
         {
+            /*
             if (_commands.ContainsKey(command) && _commands[command].GetCustomAttribute<CommandAttribute>() is { } attribute)
             {
                 //Debug.Log($"{attribute.isClient} C:S {attribute.isServer}, {attribute.permissionLevel}");
@@ -128,39 +117,52 @@ namespace Console
                 return attribute.isServer;
             }
             MissingCommand(args, info);
+            */
             return false;
         }
         
-        private static void callCommandS(string command, string[] args, CommandCallInfo info)
+        private static void CallCommandS(string command, string[] args, CommandCallInfo info)
         {
-            if (_commands.ContainsKey(command))
+            if (Commands.ContainsKey(command))
             {
-                invokeCommand(command, args, info);
+                InvokeCommand(command, args, info);
             }
         }
         
         //TODO: Add metadata here
 
-        private static void addCommand(MethodInfo action)
+        private static void AddCommand(MethodInfo method)
         {
-            var cmd = CommandAttribute.GetCommandAttribute(action);
-            if (_commands.ContainsKey(cmd.name))
+            
+            CommandAttribute cmd = CommandAttribute.GetCommandAttribute(method);
+            if (Commands.ContainsKey(cmd.name))
                 Debug.LogWarning($"Command : {cmd.name} : is registered and being overwritten! Try adding the OverloadedCommand attribute!");
-            _commands[cmd.name] = action;
-            //action.GetParameters().Where(info => info.GetType())
+            //TODO
+
+            if (method.IsDefined(typeof(CommandOverloadedAttribute)))
+            {
+                
+            }
+            else
+            {
+                Delegate actionType = Delegate.CreateDelegate(
+                    Expression.GetActionType(method.GetParameters().Select(info => info.ParameterType).ToArray()), method);
+                Commands[cmd.name] = new SingleInvokerCommandInfo(actionType, cmd);
+            }
+            
         }
         
-        private void sendChatClient(string message)
+        private void SendChatClient(string message)
         {
             var info = new CommandCallInfo();
-            _input.text = "";
+            input.text = "";
             if (message.Length < 1 || message.Trim().Length == 0)
                 return;
             
             if (message[0] == '$' && message.Length >= 2)
             {
                 var spl = message.Split(' ');
-                if (!callCommandC(spl[0].Substring(1), spl, info))
+                if (!CallCommandC(spl[0].Substring(1), spl, info))
                     return;
             }
 
@@ -168,13 +170,14 @@ namespace Console
             InstanceFinder.ClientManager.Broadcast(new ChatMessage(message, "a"));
         }
 
-        private static void MissingCommand(string[] args, CommandCallInfo info)
+        private static void InvokeCommand(string command, string[] args, CommandCallInfo info)
         {
-            Debug.LogWarning($"No command found with name: {args[0].Substring(1)}");
-        }
-
-        private static void invokeCommand(string command, string[] args, CommandCallInfo info)
-        {
+            if (Commands.ContainsKey(command))
+            {
+                Commands[command].Invoke(args, info);
+            }
+            
+            /*
             if (info.conn != null && !PermissionHandler.PlayerHasPermission(_commands[command]
                     .GetCustomAttribute<CommandAttribute>().permissionLevel, info.conn))
             {
@@ -182,59 +185,60 @@ namespace Console
                 return;
             }
             _commands[command].Invoke(null, new object[] { args, info });
+            */
         }
         
 
         #endregion
         
         //Should be server side only
-        private static void handleChat(ChatMessage message, CommandCallInfo info)
+        private static void HandleChat(ChatMessage message, CommandCallInfo info)
         {
-            if (ChatChannel._channels.ContainsKey(message.channelId) && ChatChannel._channels[message.channelId].canMessageInChannel(info.conn))
-                InstanceFinder.ServerManager.Broadcast(ChatChannel._channels[message.channelId].Connections, message);
+            if (ChatChannel.Channels.ContainsKey(message.ChannelId) && ChatChannel.Channels[message.ChannelId].CanMessageInChannel(info.conn))
+                InstanceFinder.ServerManager.Broadcast(ChatChannel.Channels[message.ChannelId].Connections, message);
         }
 
         //S2C-C
-        public static void sendChatMessage(ChatMessage chatMessage)
+        public static void SendChatMessage(ChatMessage chatMessage)
         {
-            _instance._text.text += chatMessage.message + "\n";
+            _instance.text.text += chatMessage.Message + "\n";
         }
 
         //C2S-S
-        public static void recieveChatMessage(NetworkConnection connection, ChatMessage chatMessage)
+        public static void ReceiveChatMessage(NetworkConnection connection, ChatMessage chatMessage)
         {
             
             var info = new CommandCallInfo(conn:connection);
             
-            if (chatMessage.message.Length == 0)
+            if (chatMessage.Message.Length == 0)
                 return;
 
-            if (chatMessage.message[0] != '$')
+            if (chatMessage.Message[0] != '$')
             {
                 //needs to determine who sees the message and send a client RPC to them
-                handleChat(chatMessage, info);
+                HandleChat(chatMessage, info);
                 return;
             }
 
-            var spl = chatMessage.message.Split(' ');
-            callCommandS(spl[0].Substring(1), spl, info);
+            var spl = chatMessage.Message.Split(' ');
+            CallCommandS(spl[0].Substring(1), spl, info);
         }
         
         public struct ChatMessage : IBroadcast
         {
-            public string message;
-            public string channelId;
+            public string Message;
+            public string ChannelId;
 
             public ChatMessage(string message, string channelId)
             {
-                this.message = message;
-                this.channelId = channelId;
+                this.Message = message;
+                this.ChannelId = channelId;
             }
         }
-        public record CommandCallInfo([CanBeNull] NetworkConnection conn = null);
+
         public struct ChatChannel
         {
-            public static readonly Dictionary<string, ChatChannel> _channels = new Dictionary<string, ChatChannel>();
+            public static readonly Dictionary<string, ChatChannel> Channels = new Dictionary<string, ChatChannel>();
 
             //Check if the client has access
             public HashSet<NetworkConnection> Connections { get; private set; }
@@ -242,11 +246,11 @@ namespace Console
             public ChatChannel(string name)
             {
                 Connections = new HashSet<NetworkConnection>();
-                _channels[name] = this;
+                Channels[name] = this;
             }
             
 
-            public bool canMessageInChannel(NetworkConnection id)
+            public bool CanMessageInChannel(NetworkConnection id)
             {
                 //TODO: fix
                 return true;// Connections.Contains(id);
@@ -256,8 +260,7 @@ namespace Console
 
         public abstract class CommandInfo
         {
-            public abstract void Invoke(string[] input);
-            
+            public abstract void Invoke(string[] input, CommandCallInfo commandCallInfo);
             
         }
         
@@ -266,39 +269,49 @@ namespace Console
             
             private Delegate _delegate;
             private Range _range;
+            private int _permissionLevel;
+            private bool _onServer;
+            private bool _onClient;
+            
+            //Permission level
+            //Sidedness
 
-            public SingleInvokerCommandInfo(Delegate @delegate)
+            public SingleInvokerCommandInfo(Delegate @delegate, CommandAttribute attribute)
             {
                 _delegate = @delegate;
                 _range = _delegate.GetMethodInfo().GetParameters().GetRange();
+                _permissionLevel = attribute.permissionLevel;
+                _onClient = attribute.isClient;
+                _onServer = attribute.isServer;
             }
 
-            public override void Invoke(string[] input)
+            public override void Invoke(string[] input, CommandCallInfo commandCallInfo)
             {
-                CommandCallInfo commandCallInfo = new CommandCallInfo();
+                //Check call info for sides and permissions
+                //Fires on client only if exclusively client
                 
-                //MethodInfo methodInfo = _delegate.GetMethodInfo();
                 ParameterInfo[] parameters = _delegate.GetMethodInfo().GetParameters();
                 object[] output = new object[parameters.Length];
                 int paramNumber = 0;
                 int len = 0;
                 try
                 {
-                    //Check length here
                     if (_range.Start.Value > input.Length || _range.End.Value < input.Length)
                         throw new CommandParseException($"Number of args does not match for called command {input.Length} is not within {_range.Start.Value} and {_range.End.Value}");
-                    
                     ParameterInfo current;
                     for (int i = 0; i < input.Length; i+=len)
                     {
                         current = parameters[paramNumber];
                         
                         if (current.ParameterType.IsArray && current.IsDefined(typeof(CommandParameterLengthAttribute)))
-                        {
+                        { //Handles array parameters
+                            
                             int paramLength = current.GetCustomAttribute<CommandParameterLengthAttribute>().range;
                             int length = Parsers.GetLength(current.ParameterType.GetElementType());
                             int numberOut = paramLength;
-                            if (paramLength < 1)
+                            
+                            //Sets number of outputted values if the number is not capped
+                            if (paramLength < 1) 
                             {
                                 int num = input.Length - i;
                                 if (num % length != 0 || num / length < - paramLength)
@@ -306,19 +319,25 @@ namespace Console
                                                                     $"or {num / length} was too few operations, {-paramLength} required.");
                                 numberOut = num / length;
                             }
-                            var arr = Array.CreateInstance(current.ParameterType.GetElementType(), numberOut);
+                            
+                            //Way more complex way to set up the value to be filled
+                            Array arr = Array.CreateInstance(current.ParameterType.GetElementType(), numberOut);
                             for (int j = 0; j < numberOut; j++)
                             {
                                 arr.SetValue(Parsers.getValue(current.ParameterType.GetElementType(), 
                                     input[(i + j * length)..(i + j * length + length)],
                                     commandCallInfo), j);
                             }
+                            //Filling the value into the output
                             output[paramNumber] = arr;
+                            
+                            //We should break if this is the last parameter, as there *should* be no remaining strings
+                            len = numberOut * length;
                             if (paramLength < 1)
                                 break;
                         }
                         else
-                        {
+                        { //Non-array parameters
                             len = Parsers.GetLength(current.ParameterType);
                             output[paramNumber] = Parsers.getValue(current.ParameterType, input[i..(i+len)], commandCallInfo);
                         }

@@ -15,8 +15,8 @@ public static class RPCSender
 
     public static void initializePackets()
     {
-        RegisterBroadcastC2S<ConsoleLogger.ChatMessage>(ConsoleLogger.sendChatMessage);
-        RegisterBroadcastS2C<ConsoleLogger.ChatMessage>(ConsoleLogger.recieveChatMessage, false);
+        RegisterBroadcastC2S<ConsoleLogger.ChatMessage>(ConsoleLogger.SendChatMessage);
+        RegisterBroadcastS2C<ConsoleLogger.ChatMessage>(ConsoleLogger.ReceiveChatMessage, false);
 
         
 

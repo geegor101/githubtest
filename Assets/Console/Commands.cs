@@ -11,7 +11,8 @@ namespace Console
         public static DebugEnabled _debugStatus = DebugEnabled.FALSE;
         
 
-        private static void InvalidArguments(string[] args, ConsoleLogger.CommandCallInfo info)
+        /*
+        private static void InvalidArguments(string[] args, CommandCallInfo info)
         {
             string output = "";
             for (var i = 1; i < args.Length; i++)
@@ -21,23 +22,18 @@ namespace Console
 
             Debug.LogWarning($"Invalid command argument(s) : {output}");
         }
+        */
 
-        public static void NoPermissionError(string[] args, ConsoleLogger.CommandCallInfo info)
+        public static void NoPermissionError(CommandCallInfo info)
         {
             Debug.LogWarning("You lack the permission to perform that command");
         }
 
-        /*
+        
         [Command("start", false, true)]
-        public static void StartCommand(string[] args, ConsoleLogger.CommandCallInfo info)
+        public static void StartCommand(string location, CommandCallInfo info)
         {
-            if (args.Length != 2)
-            {
-                InvalidArguments(args, info);
-                return;
-            }
-
-            switch (args[1])
+            switch (location)
             {
                 case "server":
                     Debug.LogWarning("Starting server: ");
@@ -57,13 +53,13 @@ namespace Console
 
                     break;
                 default:
-                    InvalidArguments(args, info);
+                    Debug.LogWarning("Invalid start location");
                     break;
             }
         }
 
         [Command("stophost", true, true)]
-        public static void StopCommand(string[] args, ConsoleLogger.CommandCallInfo info)
+        public static void StopCommand(CommandCallInfo info)
         {
             Debug.LogWarning("Stopping host: ");
             InstanceFinder.ClientManager.StopConnection();
@@ -71,38 +67,45 @@ namespace Console
         }
 
         [Command("test", true, true)]
-        public static void TestCommand(string[] args, ConsoleLogger.CommandCallInfo info)
+        public static void TestCommand(CommandCallInfo info)
         {
         }
 
         [Command("whoami", false, true)]
-        public static void WhoAmICommand(string[] args, ConsoleLogger.CommandCallInfo info)
+        public static void WhoAmICommand(CommandCallInfo info)
         {
+            if (info.conn != null)
+                Debug.Log($"ID: {info.conn.ClientId}");
         }
 
         [Command("debugstate", true, false, 3)]
-        public static void DebugStateCommand(string[] args, ConsoleLogger.CommandCallInfo info)
+        public static void DebugStateCommand(string state, CommandCallInfo info)
         {
             if (info.conn != null)
                 return;
-            if (DebugEnabled.TryParse(args[1], out DebugEnabled state) && state != _debugStatus)
-                _debugStatus = state; //Any update requiring stuff can be called here
+            if (DebugEnabled.TryParse(state, out DebugEnabled st) && st != _debugStatus)
+                _debugStatus = st; //Any update requiring stuff can be called here
         }
-        */
+        
 
         
         [Command("tester", true, true)]
-        public static void TestCommand(string s, int[] ints, ConsoleLogger.CommandCallInfo info)
+        public static void TestCommand(string s, [CommandParameterLength(0)] int[] ints, CommandCallInfo info)
         {
             Debug.Log($"Command sent: {s}, {ints.Length}");
         }
 
         [Command("vector3test", true, true)]
-        public static void Vector3Test(Vector3 vector3, [CommandParameterLength(-2)] int[] ints, ConsoleLogger.CommandCallInfo info)
+        public static void Vector3Test(Vector3 vector3, [CommandParameterLength(-2)] int[] ints, CommandCallInfo info)
         {
             Debug.Log($"({vector3.x}, {vector3.y}, {vector3.z}) {ints.Length}");
         }
-        
+
+        [Command("benchmark", false, true)]
+        public static void BenchmarkCommand(int ints, [CommandParameterLength(2)] string[] strs, CommandCallInfo info)
+        {
+            
+        }
         
 
         public enum DebugEnabled
@@ -111,9 +114,5 @@ namespace Console
             FALSE
         }
 
-        // See the attribute guidelines at 
-        //  http://go.microsoft.com/fwlink/?LinkId=85236
-
-        
     }
 }

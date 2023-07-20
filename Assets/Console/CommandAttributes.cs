@@ -34,7 +34,7 @@ namespace Console
     {}
     
     [AttributeUsage(AttributeTargets.Method, Inherited = false)]
-    public sealed class CommandAttribute : Attribute
+    public sealed class CommandAttribute : ConsoleAttribute
     { 
         public readonly bool isServer;
         public readonly bool isClient;
@@ -76,7 +76,7 @@ namespace Console
     }
 
     [AttributeUsage(AttributeTargets.Method, Inherited = false)]
-    sealed class ParserAttribute : Attribute
+    public sealed class ParserAttribute : ConsoleAttribute
     {
         public readonly int Strings;
         
@@ -86,6 +86,13 @@ namespace Console
                 Strings = 1;
             this.Strings = Strings;
         }
+    }
+
+    [AttributeUsage(AttributeTargets.Method)]
+    public abstract class ConsoleAttribute : Attribute
+    {
+        public ConsoleAttribute()
+        {}
     }
     
     public static class Parsers
@@ -104,18 +111,18 @@ namespace Console
             }
 
             if (methodInfo.GetParameters()[0].ParameterType != typeof(string[]) ||
-                methodInfo.GetParameters()[1].ParameterType != typeof(ConsoleLogger.CommandCallInfo))
+                methodInfo.GetParameters()[1].ParameterType != typeof(CommandCallInfo))
                 throw new CommandParseException($"Incorrect method parameters on parser : {methodInfo.Name}");
             
             parsers[methodInfo.ReturnType] =
                 new ParameterParser(
                     Delegate.CreateDelegate(Expression.GetFuncType(
-                        typeof(string[]), typeof(ConsoleLogger.CommandCallInfo), methodInfo.ReturnType
+                        typeof(string[]), typeof(CommandCallInfo), methodInfo.ReturnType
                         ), methodInfo),
                     methodInfo.GetCustomAttribute<ParserAttribute>().Strings);
         }
 
-        internal static Object getValue(Type type, string[] input, ConsoleLogger.CommandCallInfo info)
+        internal static Object getValue(Type type, string[] input, CommandCallInfo info)
         {
             if (parsers.ContainsKey(type))
             {
@@ -136,7 +143,7 @@ namespace Console
             int lower = 0, upper = 0;
             if (infos.Length == 1)
                 return ..0;
-            if (infos.Length < 1 || infos[^1].ParameterType != typeof(ConsoleLogger.CommandCallInfo))
+            if (infos.Length < 1 || infos[^1].ParameterType != typeof(CommandCallInfo))
                 throw new CommandParseException("Command registered without command info");
             
             /*
@@ -223,6 +230,7 @@ namespace Console
         }
     }
 
+    /*
     public class Holder<T> where T : struct
     {
         public readonly T Value;
@@ -237,4 +245,5 @@ namespace Console
             return new Holder<T>(obj);
         } 
     }
+    */
 }
