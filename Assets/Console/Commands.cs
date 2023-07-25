@@ -1,5 +1,4 @@
-﻿using System.Numerics;
-using FishNet;
+﻿using FishNet;
 using UnityEngine;
 using Vector3 = UnityEngine.Vector3;
 

@@ -1,88 +1,31 @@
 using System;
 using System.Collections.Generic;
-using System.Diagnostics;
 using System.Linq;
 using System.Linq.Expressions;
 using System.Reflection;
-using System.Threading;
 using FishNet;
 using FishNet.Broadcast;
 using FishNet.Connection;
-using FishNet.Managing;
-using FishNet.Object;
-using JetBrains.Annotations;
-using TMPro;
 using UnityEngine;
-using UnityEngine.Serialization;
 using Debug = UnityEngine.Debug;
-using Object = System.Object;
 
 namespace Console
 {
-    [DisallowMultipleComponent]
-    public class ConsoleLogger : MonoBehaviour
+    public static class ConsoleLogger
     {
-
-        [FormerlySerializedAs("_text")] [SerializeField]
-        private TMP_Text text;
-    
-        [FormerlySerializedAs("_input")] [SerializeField]
-        private TMP_InputField input;
-
-        private static ConsoleLogger _instance;
-
         public delegate void CommandLoadedDelegate();
 
         public static event CommandLoadedDelegate OnCommandsLoaded;
-
-        #region MONO-B
-
-        private void Start()
+        
+        public static void Initialize()
         {
-            _instance = this;
-            input.onSubmit.AddListener(SendChatClient);
             CollectCommands();
-            Debug.Log("Console Loaded!");
-        }
-        
-        private void OnEnable()
-        {
-            Application.logMessageReceived += log;
-        }
 
-        private void OnDisable()
-        {
-            Application.logMessageReceived -= log;
         }
-        
-        private void log(string condition, string stackTrace, LogType type)
-        {
-            string msg = "";
-            
-            switch (type)
-            {
-                case LogType.Warning :
-                    msg += "<color=yellow>[Warn";
-                    break;
-                case LogType.Error :
-                    msg += "<color=red>[Error";
-                    break;
-                case LogType.Log :
-                    msg += "<color=grey>[Log";
-                    break;
-            }
-
-            msg +=  $": {DateTime.Now.Hour}:{DateTime.Now.Minute}:{DateTime.Now.Second}] {condition} </color>\n";
-            
-            text.text += msg;
-        }
-        
-        #endregion
 
         #region Call/Add CMDs
         
-        private static readonly Dictionary<string, CommandInfo> Commands = new Dictionary<string, CommandInfo>();
-        
+        private static readonly Dictionary<string, CommandInfo> Commands = new();
 
         private static void CollectCommands()
         {
@@ -152,10 +95,11 @@ namespace Console
             
         }
         
+        /*
         private void SendChatClient(string message)
         {
             var info = new CommandCallInfo();
-            input.text = "";
+            //input.text = "";
             if (message.Length < 1 || message.Trim().Length == 0)
                 return;
             
@@ -169,6 +113,7 @@ namespace Console
             //TODO: impl (channels)
             InstanceFinder.ClientManager.Broadcast(new ChatMessage(message, "a"));
         }
+        */
 
         private static void InvokeCommand(string command, string[] args, CommandCallInfo info)
         {
@@ -201,7 +146,7 @@ namespace Console
         //S2C-C
         public static void SendChatMessage(ChatMessage chatMessage)
         {
-            _instance.text.text += chatMessage.Message + "\n";
+            //_instance.text.text += chatMessage.Message + "\n";
         }
 
         //C2S-S

@@ -3,6 +3,7 @@ using System.Linq;
 using System.Reflection;
 using Unity.VisualScripting;
 using UnityEngine;
+using UnityEngine.UIElements;
 
 namespace code
 {
@@ -36,6 +37,16 @@ namespace code
                 fieldInfo.SetValueOptimized(behaviour,  behaviour.GetComponent(fieldInfo.FieldType));
             }
         }
+
+        public static void AutofillUIElements(this MonoBehaviour behaviour, UIDocument document)
+        {
+            foreach (FieldInfo fieldInfo in behaviour.GetType().GetFields().Where(info => info.IsDefined(typeof(AutofillUIElementAttribute))))
+            {
+                fieldInfo.SetValueOptimized(behaviour, 
+                    document.rootVisualElement.Q(fieldInfo.GetCustomAttribute<AutofillUIElementAttribute>().name));
+            }
+        }
+        
     }
     
     [AttributeUsage(AttributeTargets.Field, Inherited = true, AllowMultiple = false)]
@@ -43,6 +54,16 @@ namespace code
     {
         public AutofillBehaviorAttribute()
         {
+        }
+    }
+
+    [AttributeUsage(AttributeTargets.All, Inherited = false, AllowMultiple = true)]
+    sealed class AutofillUIElementAttribute : Attribute
+    {
+        public readonly string name;
+        public AutofillUIElementAttribute(string name)
+        {
+            this.name = name;
         }
     }
 }

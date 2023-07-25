@@ -1,5 +1,4 @@
-﻿using System;
-using FishNet;
+﻿using Console;
 using FishNet.Managing;
 using UnityEngine;
 using UnityEngine.InputSystem;
@@ -19,10 +18,9 @@ namespace Managers
         private void Start()
         {
             _instance = this;
-            
+            Application.logMessageReceived += UIManager.LOG;
+            ConsoleLogger.Initialize();
             RPCSender.initializePackets();
-            
-            
             if (_manager == null)
             {
                 Debug.LogError("Network Manager is null");
