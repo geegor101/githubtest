@@ -20,7 +20,6 @@ namespace Console
         public static void Initialize()
         {
             CollectCommands();
-
         }
 
         #region Call/Add CMDs

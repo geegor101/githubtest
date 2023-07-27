@@ -11,13 +11,11 @@ public class UIManager : MonoBehaviour
     [AutofillBehavior]
     public UIDocument _UIDocument;
 
-    [AutofillUIElement("ChannelSelector")]
-    public DropdownField _channelSelector;
-    [AutofillUIElement("ConsoleInput")]
-    public TextField _consoleInput;
-    [AutofillUIElement("ConsoleOutput")]
-    public ListView _consoleOutput;
-
+    [AutofillUIElement("ChannelSelector")] public DropdownField _channelSelector;
+    [AutofillUIElement("ConsoleInput")] public TextField _consoleInput;
+    [AutofillUIElement("ConsoleOutput")] public ListView _consoleOutput;
+    [AutofillUIElement("ConsoleWindow")] public VisualElement _consoleWindow;
+    
     private static UIManager _instance;
 
     private static readonly List<string> ConsoleOutputStrings = new List<string>(){""};
@@ -29,20 +27,24 @@ public class UIManager : MonoBehaviour
 
     void Start()
     {
-        this.AutofillAttributes();
-        this.AutofillUIElements(_UIDocument);
-        _instance = this;
-        SetupConsoleOutput();
-        
         Debug.Log("Hello there!");
         Debug.LogWarning("Hello there!");
         Debug.LogError("Hello there!");
-
+        for (int i = 0; i < 300; i++)
+        {
+            Debug.Log($"Message! + {i}");
+        }
     }
 
     private void OnEnable()
     {
         ConsoleLoggedEvent += ReloadConsole;
+        this.AutofillAttributes();
+        this.AutofillUIElements(_UIDocument);
+        _instance = this;
+        SetupConsoleOutput();
+        HideConsole();
+        ShowConsole();
     }
 
     private void OnDisable()
@@ -73,15 +75,15 @@ public class UIManager : MonoBehaviour
         }
 
         msg +=  $": {DateTime.Now.Hour}:{DateTime.Now.Minute}:{DateTime.Now.Second}] {condition} </color>\n";
-        RecieveConsoleMessage(msg, new ConsoleInfo(MessageSource.CONSOLE));
+        ReceiveConsoleMessage(msg, new ConsoleInfo(MessageSource.CONSOLE));
         ConsoleLoggedEvent?.Invoke();
     }
 
-    public static void RecieveConsoleMessage(string message, ConsoleInfo info)
+    public static void ReceiveConsoleMessage(string message, ConsoleInfo info)
     {
         if (info.Source == MessageSource.PLAYER)
         {
-            message = Regex.Replace(message, "[<][^>]*[>]", "");
+            message = Regex.Replace(message, @"[<][^>]*[>]", "");
         }
 
         ConsoleOutputStrings.Add(message);
@@ -98,6 +100,13 @@ public class UIManager : MonoBehaviour
     private void SetupConsoleOutput()
     {
         //Add options for party? maybe add if someone sends a message and you want to reply?
+        _consoleWindow.usageHints &= UsageHints.GroupTransform;
+        _consoleWindow.usageHints &= UsageHints.DynamicTransform;
+        foreach (VisualElement visualElement in _consoleWindow.Children())
+        {
+            visualElement.usageHints &= UsageHints.DynamicTransform;
+        }
+        
         _channelSelector.choices = new List<string>() {"Team", "Global"}; 
         _channelSelector.index = 0;
         
@@ -110,6 +119,20 @@ public class UIManager : MonoBehaviour
         
         _consoleOutput.itemsSource = ConsoleOutputStrings;
         _consoleOutput.MarkDirtyRepaint();
+    }
+
+    public static void HideConsole()
+    {
+        _instance._consoleWindow.SetEnabled(false);
+        _instance._consoleWindow.visible = false;
+        _instance._consoleInput.visible = false;
+    }
+
+    public static void ShowConsole()
+    {
+        _instance._consoleWindow.SetEnabled(true);
+        _instance._consoleWindow.visible = true;
+        _instance._consoleInput.visible = true;
     }
 
     private VisualElement MakeConsoleLabel()

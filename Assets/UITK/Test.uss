@@ -1,4 +1,10 @@
 Label#ConsoleText {
     white-space: normal;
     background-color: rgba(45, 45, 45, 0);
+    -unity-font: url('project://database/Assets/Fonts/Roboto_Mono/static/RobotoMono-ThinItalic.ttf?fileID=12800000&guid=1b185a828eacd2a46a3284e7f34fb528&type=3#RobotoMono-ThinItalic');
+    -unity-font-definition: url('project://database/Assets/Fonts/Righteous/Righteous-Regular%20SDF.asset?fileID=11400000&guid=67c3b32791ab9c94c8adeba2e8024c84&type=2#Righteous-Regular SDF');
+}
+
+.VisualElement {
+    -unity-font-definition: url('project://database/Assets/Fonts/Righteous/Righteous-Regular%20SDF.asset?fileID=11400000&guid=67c3b32791ab9c94c8adeba2e8024c84&type=2#Righteous-Regular SDF');
 }
