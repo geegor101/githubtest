@@ -43,8 +43,6 @@ public class UIManager : MonoBehaviour
         this.AutofillUIElements(_UIDocument);
         _instance = this;
         SetupConsoleOutput();
-        HideConsole();
-        ShowConsole();
     }
 
     private void OnDisable()
@@ -119,6 +117,8 @@ public class UIManager : MonoBehaviour
         
         _consoleOutput.itemsSource = ConsoleOutputStrings;
         _consoleOutput.MarkDirtyRepaint();
+        //Insert on vis element can change parentage
+        //Maybe have multiple modes for console
     }
 
     public static void HideConsole()

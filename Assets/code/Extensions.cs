@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections;
 using System.Collections.Generic;
+using Palmmedia.ReportGenerator.Core.Common;
 
 namespace code
 {
@@ -11,9 +12,7 @@ namespace code
         {
             foreach (T element in enumerable)
                 consumer.Invoke(element);
+            
         }
-
-        
-
     }
 }
