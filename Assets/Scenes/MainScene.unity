@@ -158,9 +158,10 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   <IsNested>k__BackingField: 0
-  _usePrediction: 1
+  _enablePrediction: 1
+  _predictionType: 0
   _graphicalObject: {fileID: 143012788}
-  _useStates: 1
+  _enableStateForwarding: 1
   _ownerInterpolation: 1
   _enableTeleport: 0
   _ownerTeleportThreshold: 1
@@ -184,7 +185,7 @@ MonoBehaviour:
   <ParentNetworkObject>k__BackingField: {fileID: 0}
   <ChildNetworkObjects>k__BackingField: []
   SerializedTransformProperties:
-    Position: {x: -10, y: 10, z: 7}
+    Position: {x: -10, y: 10, z: 5}
     Rotation: {x: 0, y: 0, z: 0, w: 1}
     LocalScale: {x: 5, y: 5, z: 5}
   _isNetworked: 1
@@ -197,11 +198,6 @@ MonoBehaviour:
   _scenePathHash: 83102251
   <SceneId>k__BackingField: 356921452719101076
   <AssetPathHash>k__BackingField: 0
-  _sceneNetworkObjects:
-  - {fileID: 1969341345}
-  - {fileID: 143012782}
-  - {fileID: 373933247}
-  - {fileID: 791096901}
 --- !u!65 &143012785
 BoxCollider:
   m_ObjectHideFlags: 0
@@ -281,7 +277,7 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 143012781}
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: -10, y: 10, z: 7}
+  m_LocalPosition: {x: -10, y: 10, z: 5}
   m_LocalScale: {x: 5, y: 5, z: 5}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -377,9 +373,10 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   <IsNested>k__BackingField: 0
-  _usePrediction: 0
+  _enablePrediction: 0
+  _predictionType: 0
   _graphicalObject: {fileID: 0}
-  _useStates: 1
+  _enableStateForwarding: 1
   _ownerInterpolation: 1
   _enableTeleport: 0
   _ownerTeleportThreshold: 1
@@ -415,11 +412,6 @@ MonoBehaviour:
   _scenePathHash: 83102251
   <SceneId>k__BackingField: 356921452246945504
   <AssetPathHash>k__BackingField: 0
-  _sceneNetworkObjects:
-  - {fileID: 1969341345}
-  - {fileID: 143012782}
-  - {fileID: 373933247}
-  - {fileID: 791096901}
 --- !u!1 &497177355
 GameObject:
   m_ObjectHideFlags: 0
@@ -697,17 +689,6 @@ Transform:
   m_Father: {fileID: 0}
   m_RootOrder: 1
   m_LocalEulerAnglesHint: {x: 50, y: -30, z: 0}
---- !u!114 &791096901 stripped
-MonoBehaviour:
-  m_CorrespondingSourceObject: {fileID: 7622618363317947474, guid: 327dc1fbebc1bd741992a6df0ea003cd, type: 3}
-  m_PrefabInstance: {fileID: 6496592205642342451}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 0}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 26b716c41e9b56b4baafaf13a523ba2e, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
 --- !u!1 &846296544
 GameObject:
   m_ObjectHideFlags: 0
@@ -1111,7 +1092,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 7d331f979d46e8e4a9fc90070c596d44, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  _useNetworkLod: 0
+  _enableNetworkLod: 0
   _levelOfDetailDistances: []
   _updateHostVisibility: 1
   _defaultConditions: []
@@ -1128,6 +1109,8 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   _authenticator: {fileID: 0}
+  _remoteClientTimeout: 0
+  _remoteClientTimeoutDuration: 60
   _syncTypeRate: 0.1
   SpawnPacking:
     Position: 0
@@ -1169,6 +1152,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 6d0962ead4b02a34aae248fccce671ce, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  WriteSceneObjectDetails: 0
   ObserverRpcLinks: 1
   TargetRpcLinks: 1
   ReplicateRpcLinks: 1
@@ -1344,9 +1328,10 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   <IsNested>k__BackingField: 0
-  _usePrediction: 0
+  _enablePrediction: 0
+  _predictionType: 0
   _graphicalObject: {fileID: 0}
-  _useStates: 1
+  _enableStateForwarding: 1
   _ownerInterpolation: 1
   _enableTeleport: 0
   _ownerTeleportThreshold: 1
@@ -1383,11 +1368,6 @@ MonoBehaviour:
   _scenePathHash: 83102251
   <SceneId>k__BackingField: 356921453922077798
   <AssetPathHash>k__BackingField: 0
-  _sceneNetworkObjects:
-  - {fileID: 1969341345}
-  - {fileID: 143012782}
-  - {fileID: 373933247}
-  - {fileID: 791096901}
 --- !u!114 &1969341346
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -1404,7 +1384,7 @@ MonoBehaviour:
   _addedNetworkObject: {fileID: 1969341345}
   _networkObjectCache: {fileID: 1969341345}
   SecondsOfDelay: 4
-  _gameObject: {fileID: 6064505971749183333, guid: 327dc1fbebc1bd741992a6df0ea003cd, type: 3}
+  _gameObject: {fileID: 1428903046668386762, guid: 327dc1fbebc1bd741992a6df0ea003cd, type: 3}
 --- !u!4 &1969341347
 Transform:
   m_ObjectHideFlags: 0
@@ -1428,6 +1408,18 @@ PrefabInstance:
     serializedVersion: 3
     m_TransformParent: {fileID: 0}
     m_Modifications:
+    - target: {fileID: 1067497411067469993, guid: 327dc1fbebc1bd741992a6df0ea003cd, type: 3}
+      propertyPath: _scenePathHash
+      value: 83102251
+      objectReference: {fileID: 0}
+    - target: {fileID: 1067497411067469993, guid: 327dc1fbebc1bd741992a6df0ea003cd, type: 3}
+      propertyPath: <SceneId>k__BackingField
+      value: 356921452224464425
+      objectReference: {fileID: 0}
+    - target: {fileID: 1767654930048551503, guid: 327dc1fbebc1bd741992a6df0ea003cd, type: 3}
+      propertyPath: m_RootOrder
+      value: 8
+      objectReference: {fileID: 0}
     - target: {fileID: 2653945672942847390, guid: 327dc1fbebc1bd741992a6df0ea003cd, type: 3}
       propertyPath: m_RootOrder
       value: 8
@@ -1476,6 +1468,22 @@ PrefabInstance:
       propertyPath: m_Name
       value: rigid2
       objectReference: {fileID: 0}
+    - target: {fileID: 6359379218177428370, guid: 327dc1fbebc1bd741992a6df0ea003cd, type: 3}
+      propertyPath: _scenePathHash
+      value: 83102251
+      objectReference: {fileID: 0}
+    - target: {fileID: 6359379218177428370, guid: 327dc1fbebc1bd741992a6df0ea003cd, type: 3}
+      propertyPath: <SceneId>k__BackingField
+      value: 356921451913898563
+      objectReference: {fileID: 0}
+    - target: {fileID: 7553606314077910445, guid: 327dc1fbebc1bd741992a6df0ea003cd, type: 3}
+      propertyPath: m_RootOrder
+      value: 8
+      objectReference: {fileID: 0}
+    - target: {fileID: 7553606314077910445, guid: 327dc1fbebc1bd741992a6df0ea003cd, type: 3}
+      propertyPath: m_LocalPosition.x
+      value: -0.22
+      objectReference: {fileID: 0}
     - target: {fileID: 7622618363317947474, guid: 327dc1fbebc1bd741992a6df0ea003cd, type: 3}
       propertyPath: _scenePathHash
       value: 83102251
@@ -1503,7 +1511,7 @@ PrefabInstance:
     - target: {fileID: 7622618363317947474, guid: 327dc1fbebc1bd741992a6df0ea003cd, type: 3}
       propertyPath: _sceneNetworkObjects.Array.data[3]
       value: 
-      objectReference: {fileID: 791096901}
+      objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
     m_AddedGameObjects: []

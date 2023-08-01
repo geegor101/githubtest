@@ -1,4 +1,5 @@
 ﻿using System.Diagnostics;
+using System.Threading.Tasks;
 using code;
 using Console;
 using FishNet;
@@ -31,16 +32,8 @@ namespace Managers
             InitNetworking();
             stopwatch.Stop();
             Debug.Log($"Loading finished in : {stopwatch.Elapsed}");
-            
-            InstanceFinder.TimeManager.OnTick += PhysicsStep;
-            
         }
 
-        private void PhysicsStep()
-        {
-            Physics.Simulate(0.017f);
-        }
-        
         private void InitNetworking()
         {
             switch (_startup)

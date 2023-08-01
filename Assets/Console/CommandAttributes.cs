@@ -7,37 +7,36 @@ using Object = System.Object;
 
 namespace Console
 {
-
     [AttributeUsage(AttributeTargets.Parameter)]
     public sealed class CommandParameterLengthAttribute : Attribute
     {
         public readonly int range;
-        
+
         /// <param name="range">The length of the given array. 
         /// Negatives require that many trailing values, 0 fills any trailing values</param>
         public CommandParameterLengthAttribute(int range)
         {
             this.range = range;
-            
         }
     }
 
     [AttributeUsage(AttributeTargets.Method, Inherited = false)]
     sealed class CommandOverloadedAttribute : Attribute
     {
-        public CommandOverloadedAttribute()
-        {}
     }
-    
+
     [AttributeUsage(AttributeTargets.Class, Inherited = false)]
     public sealed class CommandHolderAttribute : Attribute
-    {}
-    
+    {
+    }
+
     [AttributeUsage(AttributeTargets.Method, Inherited = false)]
     public sealed class CommandAttribute : ConsoleAttribute
-    { 
+    {
         public readonly bool isServer;
+
         public readonly bool isClient;
+
         /*
          * 0 - Clientside
          * 1 - spectator
@@ -48,7 +47,7 @@ namespace Console
          */
         public readonly int permissionLevel;
         public readonly string name;
-            
+
         public CommandAttribute(string name, bool isServer, bool isClient, int permissionLevel = 0)
         {
             this.name = name;
@@ -61,14 +60,13 @@ namespace Console
         {
             return mi.GetCustomAttribute<CommandAttribute>();
         }
-            
     }
 
     [AttributeUsage(AttributeTargets.Method, Inherited = false)]
     public sealed class CommandDescriptionAttribute : Attribute
     {
         public readonly string description;
-            
+
         public CommandDescriptionAttribute(string s)
         {
             description = s;
@@ -79,7 +77,7 @@ namespace Console
     public sealed class ParserAttribute : ConsoleAttribute
     {
         public readonly int Strings;
-        
+
         public ParserAttribute(int Strings = 1)
         {
             if (Strings < 1)
@@ -92,12 +90,13 @@ namespace Console
     public abstract class ConsoleAttribute : Attribute
     {
         public ConsoleAttribute()
-        {}
+        {
+        }
     }
-    
+
     public static class Parsers
     {
-        private static readonly Dictionary<Type, ParameterParser> parsers 
+        private static readonly Dictionary<Type, ParameterParser> parsers
             = new Dictionary<Type, ParameterParser>();
 
         internal static void AddParser(MethodInfo methodInfo)
@@ -113,12 +112,12 @@ namespace Console
             if (methodInfo.GetParameters()[0].ParameterType != typeof(string[]) ||
                 methodInfo.GetParameters()[1].ParameterType != typeof(CommandCallInfo))
                 throw new CommandParseException($"Incorrect method parameters on parser : {methodInfo.Name}");
-            
+
             parsers[methodInfo.ReturnType] =
                 new ParameterParser(
                     Delegate.CreateDelegate(Expression.GetFuncType(
                         typeof(string[]), typeof(CommandCallInfo), methodInfo.ReturnType
-                        ), methodInfo),
+                    ), methodInfo),
                     methodInfo.GetCustomAttribute<ParserAttribute>().Strings);
         }
 
@@ -128,6 +127,7 @@ namespace Console
             {
                 return parsers[type].ParserDelegate.DynamicInvoke(input, info);
             }
+
             throw new CommandParseException($"Type could not be parsed: {type.Name}");
         }
 
@@ -145,7 +145,7 @@ namespace Console
                 return ..0;
             if (infos.Length < 1 || infos[^1].ParameterType != typeof(CommandCallInfo))
                 throw new CommandParseException("Command registered without command info");
-            
+
             /*
             if (infos[^2].ParameterType.IsArray)
             {
@@ -161,7 +161,7 @@ namespace Console
                     upper = Int32.MaxValue;
             }
             */
-            
+
             Length(infos[^2], ref lower, ref upper, true);
             if (infos.Length == 2) return lower..upper;
             foreach (ParameterInfo parameterInfo in infos[..^2])
@@ -186,26 +186,28 @@ namespace Console
                             throw new CommandParseException("Trailing arrays must be at the end of commands");
                         upper = 999999;
                     }
+
                     length = Math.Abs(paramLength) * GetLength(info.ParameterType.GetElementType());
                 }
                 else
-                    throw new CommandParseException($"Command array parameter registered without length attribute: {info.ParameterType.GetElementType()}");
+                    throw new CommandParseException(
+                        $"Command array parameter registered without length attribute: {info.ParameterType.GetElementType()}");
             }
             else
             {
                 length = GetLength(info.ParameterType);
             }
+
             lower += length;
             upper += length;
         }
-
     }
 
     internal class ParameterParser
     {
         public readonly Delegate ParserDelegate;
         public readonly int length;
-        
+
         public ParameterParser(Delegate parserDelegate, int length)
         {
             ParserDelegate = parserDelegate;
@@ -217,13 +219,11 @@ namespace Console
     {
         public CommandParseException(string message) : base(message)
         {
-            
         }
     }
 
     public static class DelegateUtil
     {
-
         public static bool ArgumentsMatch(this Delegate @delegate)
         {
             return true;
