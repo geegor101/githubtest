@@ -1,6 +1,4 @@
-﻿using Unity.VisualScripting;
-using UnityEditor.Experimental.GraphView;
-using UnityEngine.Scripting;
+﻿using UnityEngine.Scripting;
 using UnityEngine.UIElements;
 
 namespace Console.UI
@@ -10,14 +8,12 @@ namespace Console.UI
         
         [Preserve]
         public new class UxmlFactory : UxmlFactory<ModalWindow> {}
-
-        public Dragger topBar;
-        public Resizer resizeable;
+        
         
         public ModalWindow()
         {
             usageHints = UsageHints.GroupTransform;
-            this.AddManipulator(topBar = new Dragger());
+            //this.AddManipulator(topBar = new Dragger());
             
         }
 

@@ -32,19 +32,18 @@ namespace code
 
         public static void AutofillAttributes(this MonoBehaviour behaviour)
         {
-            foreach (FieldInfo fieldInfo in behaviour.GetType().GetRuntimeFields().Where(info => info.IsDefined(typeof(AutofillBehaviorAttribute))))
-            {
-                fieldInfo.SetValueOptimized(behaviour,  behaviour.GetComponent(fieldInfo.FieldType));
-            }
+            behaviour.GetType().GetFields(BindingFlags.NonPublic | BindingFlags.Instance | BindingFlags.Public)
+                .Where(info => info.IsDefined(typeof(AutofillBehaviorAttribute))).ForEach(
+                    fieldInfo => fieldInfo.SetValueOptimized(behaviour,  behaviour.GetComponent(fieldInfo.FieldType)));
         }
 
         public static void AutofillUIElements(this MonoBehaviour behaviour, UIDocument document)
         {
-            foreach (FieldInfo fieldInfo in behaviour.GetType().GetFields().Where(info => info.IsDefined(typeof(AutofillUIElementAttribute))))
-            {
-                fieldInfo.SetValueOptimized(behaviour, 
-                    document.rootVisualElement.Q(fieldInfo.GetCustomAttribute<AutofillUIElementAttribute>().name));
-            }
+            behaviour.GetType().GetFields(BindingFlags.NonPublic| BindingFlags.Instance | BindingFlags.Public)
+                .Where(info => info.IsDefined(typeof(AutofillUIElementAttribute))).ForEach(fieldInfo => 
+                    fieldInfo.SetValueOptimized(behaviour, 
+                        document.rootVisualElement.Q(fieldInfo.GetCustomAttribute<AutofillUIElementAttribute>().name)));
+            
         }
         
     }

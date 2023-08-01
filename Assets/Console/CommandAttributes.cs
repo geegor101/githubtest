@@ -172,7 +172,7 @@ namespace Console
             return lower..upper;
         }
 
-        internal static void Length(ParameterInfo info, ref int lower, ref int upper, bool isLast = false)
+        private static void Length(ParameterInfo info, ref int lower, ref int upper, bool isLast = false)
         {
             int length;
             if (info.ParameterType.IsArray)

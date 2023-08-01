@@ -12,9 +12,6 @@ public static class RPCSender
     {
         RegisterBroadcastC2S<ConsoleLogger.ChatMessage>(ConsoleLogger.SendChatMessage);
         RegisterBroadcastS2C<ConsoleLogger.ChatMessage>(ConsoleLogger.ReceiveChatMessage, false);
-
-        
-
     }
     
     

@@ -2,19 +2,18 @@ using System;
 using System.Collections.Generic;
 using System.Text.RegularExpressions;
 using code;
+using Console;
 using UnityEngine;
 using UnityEngine.UIElements;
 
 public class UIManager : MonoBehaviour
 {
     // Start is called before the first frame update
-    [AutofillBehavior]
-    public UIDocument _UIDocument;
-
-    [AutofillUIElement("ChannelSelector")] public DropdownField _channelSelector;
-    [AutofillUIElement("ConsoleInput")] public TextField _consoleInput;
-    [AutofillUIElement("ConsoleOutput")] public ListView _consoleOutput;
-    [AutofillUIElement("ConsoleWindow")] public VisualElement _consoleWindow;
+    [AutofillBehavior] private UIDocument _UIDocument;
+    [AutofillUIElement("ChannelSelector")] private DropdownField _channelSelector;
+    [AutofillUIElement("ConsoleInput")] private TextField _consoleInput;
+    [AutofillUIElement("ConsoleOutput")] private ListView _consoleOutput;
+    [AutofillUIElement("ConsoleWindow")] private VisualElement _consoleWindow;
     
     private static UIManager _instance;
 
@@ -23,18 +22,6 @@ public class UIManager : MonoBehaviour
     private delegate void ConsoleLoggedDelegate();
 
     private static event ConsoleLoggedDelegate ConsoleLoggedEvent;
-
-
-    void Start()
-    {
-        Debug.Log("Hello there!");
-        Debug.LogWarning("Hello there!");
-        Debug.LogError("Hello there!");
-        for (int i = 0; i < 300; i++)
-        {
-            Debug.Log($"Message! + {i}");
-        }
-    }
 
     private void OnEnable()
     {
@@ -117,6 +104,9 @@ public class UIManager : MonoBehaviour
         
         _consoleOutput.itemsSource = ConsoleOutputStrings;
         _consoleOutput.MarkDirtyRepaint();
+
+        _consoleInput.RegisterCallback<KeyDownEvent>(KeyDownTextEvent);
+
         //Insert on vis element can change parentage
         //Maybe have multiple modes for console
     }
@@ -133,6 +123,25 @@ public class UIManager : MonoBehaviour
         _instance._consoleWindow.SetEnabled(true);
         _instance._consoleWindow.visible = true;
         _instance._consoleInput.visible = true;
+    }
+
+    private void KeyDownTextEvent(KeyDownEvent @event)
+    {
+        if (@event.keyCode == KeyCode.KeypadEnter || @event.character == '\n')
+        {
+            SendTextFromConsole(_instance._consoleInput.text);
+            _consoleInput.value = "";
+            @event.StopPropagation();
+            @event.PreventDefault();
+        }
+    }
+
+    private static void SendTextFromConsole(string text)
+    {
+        if (text.Length == 0)
+            return;
+        if (text[0] == '$')
+            ConsoleLogger.SendCommandString(text);
     }
 
     private VisualElement MakeConsoleLabel()

@@ -1,12 +1,13 @@
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
 using System.Linq.Expressions;
 using System.Reflection;
+using code;
 using FishNet;
 using FishNet.Broadcast;
 using FishNet.Connection;
-using UnityEngine;
 using Debug = UnityEngine.Debug;
 
 namespace Console
@@ -31,10 +32,14 @@ namespace Console
             List<MethodInfo> holders =
                 Assembly.GetExecutingAssembly().GetTypes()
                 .Where(type => type.IsDefined(typeof(CommandHolderAttribute)))
-                .SelectMany(type => type.GetMethods())
+                .SelectMany(type => type.GetMethods(BindingFlags.Static | BindingFlags.Public | BindingFlags.NonPublic))
                 .Where(info => info.IsDefined(typeof(ConsoleAttribute)))
                 .ToList();
             
+            holders.Where(info => info.IsDefined(typeof(ParserAttribute))).ForEach(Parsers.AddParser);
+            holders.Where(info => info.IsDefined(typeof(CommandAttribute))).ForEach(AddCommand);
+            
+            /*
             foreach (MethodInfo methodInfo in holders.Where(info => info.IsDefined(typeof(ParserAttribute))))
             {
                 Parsers.AddParser(methodInfo);
@@ -44,6 +49,7 @@ namespace Console
             {
                 AddCommand(methodInfo);
             }
+            */
             
             OnCommandsLoaded?.Invoke();
         }
@@ -113,6 +119,15 @@ namespace Console
             InstanceFinder.ClientManager.Broadcast(new ChatMessage(message, "a"));
         }
         */
+
+        public static void SendCommandString(string s)
+        {
+            string[] args = s.Split(' ');
+            if (args[0].Length == 1)
+                return;
+            InvokeCommand(args[0].Substring(1), args[1..], new CommandCallInfo());
+        }
+        
 
         private static void InvokeCommand(string command, string[] args, CommandCallInfo info)
         {
@@ -208,7 +223,7 @@ namespace Console
             
         }
         
-        public class SingleInvokerCommandInfo : CommandInfo
+        private class SingleInvokerCommandInfo : CommandInfo
         {
             
             private Delegate _delegate;

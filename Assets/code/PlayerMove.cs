@@ -9,7 +9,7 @@ public class PlayerMove : MonoBehaviour
 {
 
     //[SerializeField] private InputActionAsset _inputActionAsset;
-    [AutofillBehavior] protected Rigidbody _rigidbody;
+    [AutofillBehavior] private Rigidbody _rigidbody;
     private InputAction _moveAction;
     private InputAction _lookAction;
     [SerializeField] 

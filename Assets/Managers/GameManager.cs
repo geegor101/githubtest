@@ -1,7 +1,11 @@
-﻿using Console;
+﻿using System.Diagnostics;
+using code;
+using Console;
+using FishNet;
 using FishNet.Managing;
 using UnityEngine;
 using UnityEngine.InputSystem;
+using Debug = UnityEngine.Debug;
 
 namespace Managers
 {
@@ -11,37 +15,50 @@ namespace Managers
         public static GameManager _instance { get; private set; }
 
         [SerializeField] private InputActionAsset _inputActionAsset;
-        
-        [SerializeField]
-        public NetworkManager _manager;
+        [AutofillBehavior] private NetworkManager _manager;
+        private enum Startup { SERVER, CLIENT, HOST, NONE }
+        [SerializeField] private Startup _startup = Startup.NONE;
         
         private void Start()
         {
+            Stopwatch stopwatch = Stopwatch.StartNew();
+            this.AutofillAttributes();
             _instance = this;
             Application.logMessageReceived += UIManager.LOG;
             ConsoleLogger.Initialize();
             RPCSender.initializePackets();
-            if (_manager == null)
-            {
-                Debug.LogError("Network Manager is null");
-            }
-            else
-            {
-                //_manager.ServerManager.StartConnection();
-                //_manager.ClientManager.StartConnection();
-            }
-            //if (InstanceFinder.IsClient)
-                ClientInit();
+            InputManager.Init(_inputActionAsset);
+            InitNetworking();
+            stopwatch.Stop();
+            Debug.Log($"Loading finished in : {stopwatch.Elapsed}");
+            
+            InstanceFinder.TimeManager.OnTick += PhysicsStep;
+            
         }
 
-
-        private void ClientInit()
+        private void PhysicsStep()
         {
-            InputManager.Init(_inputActionAsset);
-            
-            //InputManager.SetFocus("GAME");
+            Physics.Simulate(0.017f);
+        }
+        
+        private void InitNetworking()
+        {
+            switch (_startup)
+            {
+                case Startup.HOST :
+                    InstanceFinder.ClientManager.StartConnection();
+                    InstanceFinder.ServerManager.StartConnection();
+                    break;
+                case Startup.CLIENT : 
+                    InstanceFinder.ClientManager.StartConnection();
+                    break;
+                case Startup.SERVER :
+                    InstanceFinder.ServerManager.StartConnection(); 
+                    break;
+                case Startup.NONE :
+                    break;
+            }
         }
     }
-    
     
 }

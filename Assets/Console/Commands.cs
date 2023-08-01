@@ -57,6 +57,14 @@ namespace Console
             }
         }
 
+        [Command("connect", false, true)]
+        public static void ConnectCommand(string destination, CommandCallInfo info)
+        {
+            if (!InstanceFinder.IsClient)
+                InstanceFinder.ClientManager.StartConnection();
+            InstanceFinder.ClientManager.StartConnection(destination);
+        }
+
         [Command("stophost", true, true)]
         public static void StopCommand(CommandCallInfo info)
         {
