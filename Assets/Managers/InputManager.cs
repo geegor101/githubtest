@@ -22,11 +22,11 @@ namespace Managers
             }
         }
 
-        [CanBeNull] public static InputActionAsset _InputActionAsset { get; private set;  }
+        private static InputActionAsset InputActionAsset { get; set;  }
 
         public static void Init(InputActionAsset inputActionAsset)
         {
-            _InputActionAsset = inputActionAsset;
+            InputActionAsset = inputActionAsset;
             inputActionAsset.Enable();
             Focus = "UI";
             FocusChangedEvent += CursorLocker;
@@ -39,12 +39,12 @@ namespace Managers
 
         public static InputAction GetInputAction(string id)
         {
-            return _InputActionAsset.FindAction(id, true);
+            return InputActionAsset.FindAction(id, true);
         }
 
         public static void QuickAddInput(string id, Action<InputAction.CallbackContext> action)
         {
-            _InputActionAsset.FindAction(id, true).performed += action;
+            InputActionAsset.FindAction(id, true).performed += action;
         }
 
         public delegate void OnFocusChanged(string oldFocus, string newFocus);
@@ -54,9 +54,9 @@ namespace Managers
         private static void SetFocus(string focus)
         {
             FocusChangedEvent?.Invoke(_focus, focus);
-            if (_InputActionAsset == null)
+            if (InputActionAsset == null)
                 return;
-            foreach (InputActionMap actionMap in _InputActionAsset.actionMaps)
+            foreach (InputActionMap actionMap in InputActionAsset.actionMaps)
             {
                 //Debug.Log($"{focus} : {actionMap.name}, {focus == DebugID}, {focus == actionMap.name}, " + $"{focus == DebugID || focus == actionMap.name}");
                 if (focus == actionMap.name || DebugID == actionMap.name)

@@ -7,6 +7,7 @@ namespace code.Networking
 {
     public class PredictedRigidbody : NetworkBehaviour
     {
+        /*
         [SerializeField] private Vector3 offset = Vector3.zero;
 
 
@@ -106,8 +107,8 @@ namespace code.Networking
             _rigidbody.velocity = rd.Velocity;
             _rigidbody.angularVelocity = rd.AngularVelocity;
         }
-
-        /*
+        */
+        
         [AutofillBehavior] private Rigidbody _rigidbody;
 
         public override void OnStartNetwork()
@@ -189,6 +190,6 @@ namespace code.Networking
             public void SetTick(uint value) => _tick = value;
             public void Dispose() {}
         }
-        */
+        
     }
 }

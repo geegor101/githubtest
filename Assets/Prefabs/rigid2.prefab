@@ -152,7 +152,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   <IsNested>k__BackingField: 0
   _enablePrediction: 1
-  _predictionType: 0
+  _predictionType: 1
   _graphicalObject: {fileID: 4787330503566414641}
   _enableStateForwarding: 1
   _ownerInterpolation: 4
@@ -186,11 +186,11 @@ MonoBehaviour:
   _initializeOrder: 0
   _defaultDespawnType: 1
   NetworkObserver: {fileID: 0}
-  <PrefabId>k__BackingField: 0
+  <PrefabId>k__BackingField: 9
   <SpawnableCollectionId>k__BackingField: 0
   _scenePathHash: 0
   <SceneId>k__BackingField: 0
-  <AssetPathHash>k__BackingField: 16775441372989691373
+  <AssetPathHash>k__BackingField: 2004999584464797889
 --- !u!114 &3745406546320779876
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -206,7 +206,6 @@ MonoBehaviour:
   _componentIndexCache: 0
   _addedNetworkObject: {fileID: 6359379218177428370}
   _networkObjectCache: {fileID: 6359379218177428370}
-  offset: {x: 0, y: 0, z: 30}
 --- !u!1 &4790922120592806334
 GameObject:
   m_ObjectHideFlags: 0

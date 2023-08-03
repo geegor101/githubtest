@@ -24,6 +24,8 @@ public class PlayerMove : MonoBehaviour
         _moveAction = InputManager.GetInputAction("GAME/Movement");
         _lookAction = InputManager.GetInputAction("GAME/Look");
         InputManager.QuickAddInput("DEBUG/ToggleFocus", FocusToggle);
+        InputManager.QuickAddInput("DEBUG/ToggleConsole", ConsoleToggle);
+
     }
 
     /*
@@ -45,6 +47,11 @@ public class PlayerMove : MonoBehaviour
             "UI" => "GAME",
             _ => InputManager.Focus
         };
+    }
+
+    private void ConsoleToggle(InputAction.CallbackContext context)
+    {
+        UIManager.ToggleConsole();
     }
     
     void Update()
@@ -87,6 +94,6 @@ public class PlayerMove : MonoBehaviour
         //output *= _rigidbody.rotation;
         //_rigidbody.rotation.
         //_rigidbody.velocity = output;
-        _rigidbody.AddRelativeForce(output, ForceMode.Impulse);
+        _rigidbody.AddRelativeForce(output);
     }
 }

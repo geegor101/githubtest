@@ -1,13 +1,16 @@
-﻿using FishNet;
+﻿using System;
+using FishNet;
+using FishNet.Managing.Statistic;
+using Managers;
 using UnityEngine;
 using Vector3 = UnityEngine.Vector3;
 
 namespace Console
 {
     [CommandHolder]
-    public static class Commands
+    static class Commands
     {
-        public static DebugEnabled _debugStatus = DebugEnabled.FALSE;
+        private static DebugEnabled _debugStatus = DebugEnabled.FALSE;
         
 
         /*
@@ -23,14 +26,14 @@ namespace Console
         }
         */
 
-        public static void NoPermissionError(CommandCallInfo info)
+        private static void NoPermissionError(CommandCallInfo info)
         {
             Debug.LogWarning("You lack the permission to perform that command");
         }
 
         
         [Command("start", false, true)]
-        public static void StartCommand(string location, CommandCallInfo info)
+        private static void StartCommand(string location, CommandCallInfo info)
         {
             switch (location)
             {
@@ -58,7 +61,7 @@ namespace Console
         }
 
         [Command("connect", false, true)]
-        public static void ConnectCommand(string destination, CommandCallInfo info)
+        private static void ConnectCommand(string destination, CommandCallInfo info)
         {
             if (!InstanceFinder.IsClient)
                 InstanceFinder.ClientManager.StartConnection();
@@ -66,27 +69,47 @@ namespace Console
         }
 
         [Command("stophost", true, true)]
-        public static void StopCommand(CommandCallInfo info)
+        private static void StopCommand(CommandCallInfo info)
         {
             Debug.LogWarning("Stopping host: ");
             InstanceFinder.ClientManager.StopConnection();
             InstanceFinder.ServerManager.StopConnection(true);
         }
 
+        [Command("conn", false, true)]
+        private static void ConnectionCommand(CommandCallInfo info)
+        {
+            string output = string.Empty;
+            GameManager.GetTrafficArgs(out NetworkTrafficArgs? serverArgs, out NetworkTrafficArgs? clientArgs);
+            if (serverArgs.HasValue)
+                output += $"Server out: {NetworkTraficStatistics.FormatBytesToLargest(serverArgs.Value.ToServerBytes)} " +
+                          $"Server in: {NetworkTraficStatistics.FormatBytesToLargest(serverArgs.Value.FromServerBytes)} ";
+            if (clientArgs.HasValue)
+                output += $"Client out: {NetworkTraficStatistics.FormatBytesToLargest(clientArgs.Value.ToServerBytes)} " +
+                          $"Client in: {NetworkTraficStatistics.FormatBytesToLargest(clientArgs.Value.FromServerBytes)} ";
+            if (InstanceFinder.IsClient)
+                output += $"Ping: {InstanceFinder.TimeManager.RoundTripTime}";
+            Debug.Log(output);
+        }
+        
+        
+        
+
         [Command("test", true, true)]
-        public static void TestCommand(CommandCallInfo info)
+        private static void TestCommand(CommandCallInfo info)
         {
         }
 
         [Command("whoami", false, true)]
-        public static void WhoAmICommand(CommandCallInfo info)
+        private static void WhoAmICommand(CommandCallInfo info)
         {
             if (info.conn != null)
                 Debug.Log($"ID: {info.conn.ClientId}");
+            //InstanceFinder.StatisticsManager.NetworkTraffic.OnClientNetworkTraffic
         }
 
         [Command("debugstate", true, false, 3)]
-        public static void DebugStateCommand(string state, CommandCallInfo info)
+        private static void DebugStateCommand(string state, CommandCallInfo info)
         {
             if (info.conn != null)
                 return;
@@ -97,25 +120,25 @@ namespace Console
 
         
         [Command("tester", true, true)]
-        public static void TestCommand(string s, [CommandParameterLength(0)] int[] ints, CommandCallInfo info)
+        private static void TestCommand(string s, [CommandParameterLength(0)] int[] ints, CommandCallInfo info)
         {
             Debug.Log($"Command sent: {s}, {ints.Length}");
         }
 
         [Command("vector3test", true, true)]
-        public static void Vector3Test(Vector3 vector3, [CommandParameterLength(-2)] int[] ints, CommandCallInfo info)
+        private static void Vector3Test(Vector3 vector3, [CommandParameterLength(-2)] int[] ints, CommandCallInfo info)
         {
             Debug.Log($"({vector3.x}, {vector3.y}, {vector3.z}) {ints.Length}");
         }
 
         [Command("benchmark", false, true)]
-        public static void BenchmarkCommand(int ints, [CommandParameterLength(2)] string[] strs, CommandCallInfo info)
+        private static void BenchmarkCommand(int ints, [CommandParameterLength(2)] string[] strs, CommandCallInfo info)
         {
             
         }
         
 
-        public enum DebugEnabled
+        private enum DebugEnabled
         {
             TRUE,
             FALSE

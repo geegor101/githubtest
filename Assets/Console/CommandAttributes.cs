@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq.Expressions;
 using System.Reflection;
+using JetBrains.Annotations;
 using UnityEngine;
 using Object = System.Object;
 
@@ -87,12 +88,8 @@ namespace Console
     }
 
     [AttributeUsage(AttributeTargets.Method)]
-    public abstract class ConsoleAttribute : Attribute
-    {
-        public ConsoleAttribute()
-        {
-        }
-    }
+    [MeansImplicitUse]
+    public abstract class ConsoleAttribute : Attribute {}
 
     public static class Parsers
     {

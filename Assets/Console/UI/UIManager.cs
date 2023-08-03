@@ -109,10 +109,22 @@ public class UIManager : MonoBehaviour
 
         //Insert on vis element can change parentage
         //Maybe have multiple modes for console
+        HideConsole();
     }
 
+    public static bool ConsoleEnabled { get; private set; }
+    
+    public static void ToggleConsole()
+    {
+        if (ConsoleEnabled)
+            HideConsole();
+        else
+            ShowConsole();
+    }
+    
     public static void HideConsole()
     {
+        ConsoleEnabled = false;
         _instance._consoleWindow.SetEnabled(false);
         _instance._consoleWindow.visible = false;
         _instance._consoleInput.visible = false;
@@ -120,6 +132,7 @@ public class UIManager : MonoBehaviour
 
     public static void ShowConsole()
     {
+        ConsoleEnabled = true;
         _instance._consoleWindow.SetEnabled(true);
         _instance._consoleWindow.visible = true;
         _instance._consoleInput.visible = true;
@@ -156,6 +169,6 @@ public class UIManager : MonoBehaviour
     {
         (label as Label).text = ConsoleOutputStrings[i];
     }
-    
 
+    
 }

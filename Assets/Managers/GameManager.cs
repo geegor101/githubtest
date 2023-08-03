@@ -4,6 +4,7 @@ using code;
 using Console;
 using FishNet;
 using FishNet.Managing;
+using FishNet.Managing.Statistic;
 using UnityEngine;
 using UnityEngine.InputSystem;
 using Debug = UnityEngine.Debug;
@@ -19,7 +20,10 @@ namespace Managers
         [AutofillBehavior] private NetworkManager _manager;
         private enum Startup { SERVER, CLIENT, HOST, NONE }
         [SerializeField] private Startup _startup = Startup.NONE;
-        
+
+        private static NetworkTrafficArgs _serverArgs;
+        private static NetworkTrafficArgs _clientArgs;
+
         private void Start()
         {
             Stopwatch stopwatch = Stopwatch.StartNew();
@@ -34,9 +38,13 @@ namespace Managers
             Debug.Log($"Loading finished in : {stopwatch.Elapsed}");
         }
 
-        private void InitNetworking()
+        private static void InitNetworking()
         {
-            switch (_startup)
+            
+            InstanceFinder.StatisticsManager.NetworkTraffic.OnClientNetworkTraffic += args => _clientArgs = args;
+            InstanceFinder.StatisticsManager.NetworkTraffic.OnServerNetworkTraffic += args => _serverArgs = args;
+
+            switch (_instance._startup)
             {
                 case Startup.HOST :
                     InstanceFinder.ClientManager.StartConnection();
@@ -51,6 +59,12 @@ namespace Managers
                 case Startup.NONE :
                     break;
             }
+        }
+
+        public static void GetTrafficArgs(out NetworkTrafficArgs? serverArgs, out NetworkTrafficArgs? clientArgs)
+        {
+            serverArgs = _serverArgs;
+            clientArgs = _clientArgs;
         }
     }
     
