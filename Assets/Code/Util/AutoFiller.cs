@@ -32,14 +32,14 @@ namespace Code
 
         public static void AutofillAttributes(this MonoBehaviour behaviour)
         {
-            behaviour.GetType().GetFields(BindingFlags.NonPublic | BindingFlags.Instance | BindingFlags.Public)
+            behaviour.GetType().GetFields(BindingFlags.NonPublic | BindingFlags.Instance | BindingFlags.Public | BindingFlags.Static)
                 .Where(info => info.IsDefined(typeof(AutofillBehaviorAttribute))).ForEach(
                     fieldInfo => fieldInfo.SetValue(behaviour,  behaviour.GetComponent(fieldInfo.FieldType)));
         }
 
         public static void AutofillUIElements(this MonoBehaviour behaviour, UIDocument document)
         {
-            behaviour.GetType().GetFields(BindingFlags.NonPublic| BindingFlags.Instance | BindingFlags.Public)
+            behaviour.GetType().GetFields(BindingFlags.NonPublic| BindingFlags.Instance | BindingFlags.Public | BindingFlags.Static)
                 .Where(info => info.IsDefined(typeof(AutofillUIElementAttribute))).ForEach(fieldInfo => 
                     fieldInfo.SetValue(behaviour, 
                         document.rootVisualElement.Q(fieldInfo.GetCustomAttribute<AutofillUIElementAttribute>().name)));

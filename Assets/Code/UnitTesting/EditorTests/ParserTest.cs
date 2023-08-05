@@ -9,6 +9,13 @@ namespace Code.UnitTesting.EditorTests
 {
     public class ParserTest
     {
+
+        [SetUp] //Teardown is the inverse
+        public static void SetupTesting()
+        {
+            ConsoleLogger.Initialize();
+        }
+        
         [Test]
         public void TestSimpleParsing()
         {
@@ -19,8 +26,6 @@ namespace Code.UnitTesting.EditorTests
         [Test]
         public void TestRangeLength()
         {
-            ConsoleLogger.Initialize();
-            
             ParameterInfo[] parameterInfos = typeof(ParserTest)
                 .GetMethod("SampleCommand", BindingFlags.Static | BindingFlags.NonPublic)
                 .GetParameters();
@@ -30,17 +35,15 @@ namespace Code.UnitTesting.EditorTests
         [Test]
         public void TestCallCommandPass()
         {
-            ConsoleLogger.Initialize();
             ConsoleLogger.SendCommandString("$unittest str 3 4 5");
-            Assert.That(Commands.testPassed);
+            Assert.That(Commands.testPassed == 1);
         }
 
         [Test]
         public void TestCallCommandFail()
         {
-            ConsoleLogger.Initialize();
             ConsoleLogger.SendCommandString("$unittest hell 3 4 2");
-            Assert.False(Commands.testPassed);
+            Assert.That(Commands.testPassed == 2);
         }
 
         [Command("sampleName", true, true)]
@@ -48,8 +51,11 @@ namespace Code.UnitTesting.EditorTests
         {
             
         }
+        
+        
     
 
+        /*
         // A UnityTest behaves like a coroutine in Play Mode. In Edit Mode you can use
         // `yield return null;` to skip a frame.
         [UnityTest]
@@ -60,5 +66,6 @@ namespace Code.UnitTesting.EditorTests
             //yield return new WaitForSeconds(4);
             yield break;
         }
+        */
     }
 }

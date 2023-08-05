@@ -1,7 +1,9 @@
 using System;
 using System.Collections.Generic;
 using System.Text.RegularExpressions;
+using FishNet.Utility.Performance;
 using UnityEngine;
+using UnityEngine.Pool;
 using UnityEngine.UIElements;
 
 namespace Code.Console.UI
@@ -10,14 +12,17 @@ namespace Code.Console.UI
     {
         // Start is called before the first frame update
         [AutofillBehavior] private UIDocument _UIDocument;
-        [AutofillUIElement("ChannelSelector")] private DropdownField _channelSelector;
-        [AutofillUIElement("ConsoleInput")] private TextField _consoleInput;
-        [AutofillUIElement("ConsoleOutput")] private ListView _consoleOutput;
-        [AutofillUIElement("ConsoleWindow")] private VisualElement _consoleWindow;
-    
+        [AutofillUIElement("ChannelSelector")] private static DropdownField _channelSelector;
+        [AutofillUIElement("ConsoleInput")] private static TextField _consoleInput;
+        [AutofillUIElement("ConsoleOutput")] private static ListView _consoleOutput;
+        [AutofillUIElement("ConsoleWindow")] private static VisualElement _consoleWindow;
+
+        private static ObjectPool<VisualElement> _labelPool =
+            new ObjectPool<VisualElement>(MakeConsoleLabel, defaultCapacity: 25, maxSize: 60);
+
         private static UIManager _instance;
 
-        private static readonly List<string> ConsoleOutputStrings = new List<string>(){""};
+        private static readonly List<string> ConsoleOutputStrings = new List<string>() { };
 
         private delegate void ConsoleLoggedDelegate();
 
@@ -25,21 +30,18 @@ namespace Code.Console.UI
 
         private void OnEnable()
         {
-            ConsoleLoggedEvent += ReloadConsole;
             this.AutofillAttributes();
             this.AutofillUIElements(_UIDocument);
             _instance = this;
             SetupConsoleOutput();
+            HideConsole();
         }
 
-        private void OnDisable()
-        {
-            ConsoleLoggedEvent -= ReloadConsole;
-        }
 
-        private void ReloadConsole()
+        private static void ReloadConsole()
         {
-            _consoleOutput.MarkDirtyRepaint();
+            //_consoleOutput.MarkDirtyRepaint();
+            _consoleOutput.RefreshItems();
         }
 
         //Maybe move this to the logger?
@@ -48,20 +50,20 @@ namespace Code.Console.UI
             string msg = "";
             switch (type)
             {
-                case LogType.Warning :
+                case LogType.Warning:
                     msg += "<color=yellow>[Warn";
                     break;
-                case LogType.Error :
+                case LogType.Error:
                     msg += "<color=red>[Error";
                     break;
-                case LogType.Log :
+                case LogType.Log:
                     msg += "<color=blue>[Log";
                     break;
             }
 
-            msg +=  $": {DateTime.Now.Hour}:{DateTime.Now.Minute}:{DateTime.Now.Second}] {condition} </color>\n";
+            msg += $": {DateTime.Now.Hour}:{DateTime.Now.Minute}:{DateTime.Now.Second}] {condition} </color>";
             ReceiveConsoleMessage(msg, new ConsoleInfo(MessageSource.CONSOLE));
-            ConsoleLoggedEvent?.Invoke();
+            //_instance.IfEnabled(manager => manager._consoleOutput.MarkDirtyRepaint());
         }
 
         public static void ReceiveConsoleMessage(string message, ConsoleInfo info)
@@ -72,10 +74,13 @@ namespace Code.Console.UI
             }
 
             ConsoleOutputStrings.Add(message);
+            ConsoleLoggedEvent?.Invoke();
         }
 
-        public record ConsoleInfo(MessageSource Source){}
-    
+        public record ConsoleInfo(MessageSource Source)
+        {
+        }
+
         public enum MessageSource
         {
             PLAYER,
@@ -85,35 +90,36 @@ namespace Code.Console.UI
         private void SetupConsoleOutput()
         {
             //Add options for party? maybe add if someone sends a message and you want to reply?
+
             _consoleWindow.usageHints &= UsageHints.GroupTransform;
             _consoleWindow.usageHints &= UsageHints.DynamicTransform;
             foreach (VisualElement visualElement in _consoleWindow.Children())
             {
                 visualElement.usageHints &= UsageHints.DynamicTransform;
             }
-        
-            _channelSelector.choices = new List<string>() {"Team", "Global"}; 
+
+            _channelSelector.choices = new List<string>() { "Team", "Global" };
             _channelSelector.index = 0;
-        
+
             _consoleOutput.horizontalScrollingEnabled = false;
 
-            _consoleOutput.makeItem += MakeConsoleLabel;
+            _consoleOutput.makeItem += GetConsoleLabel;
             _consoleOutput.bindItem += BindConsoleLabel;
+            //_consoleOutput.unbindItem += ReleaseConsoleLabel;
+            _consoleOutput.destroyItem += ReleaseConsoleLabel;
 
             _consoleOutput.virtualizationMethod = CollectionVirtualizationMethod.DynamicHeight;
-        
             _consoleOutput.itemsSource = ConsoleOutputStrings;
-            _consoleOutput.MarkDirtyRepaint();
+
 
             _consoleInput.RegisterCallback<KeyDownEvent>(KeyDownTextEvent);
 
             //Insert on vis element can change parentage
             //Maybe have multiple modes for console
-            HideConsole();
         }
 
         public static bool ConsoleEnabled { get; private set; }
-    
+
         public static void ToggleConsole()
         {
             if (ConsoleEnabled)
@@ -121,28 +127,30 @@ namespace Code.Console.UI
             else
                 ShowConsole();
         }
-    
+
         public static void HideConsole()
         {
+            ConsoleLoggedEvent -= ReloadConsole;
             ConsoleEnabled = false;
-            _instance._consoleWindow.SetEnabled(false);
-            _instance._consoleWindow.visible = false;
-            _instance._consoleInput.visible = false;
+            _consoleWindow.SetEnabled(false);
+            _consoleWindow.visible = false;
+            _consoleInput.visible = false;
         }
 
         public static void ShowConsole()
         {
+            ConsoleLoggedEvent += ReloadConsole;
             ConsoleEnabled = true;
-            _instance._consoleWindow.SetEnabled(true);
-            _instance._consoleWindow.visible = true;
-            _instance._consoleInput.visible = true;
+            _consoleWindow.SetEnabled(true);
+            _consoleWindow.visible = true;
+            _consoleInput.visible = true;
         }
 
         private void KeyDownTextEvent(KeyDownEvent @event)
         {
             if (@event.keyCode == KeyCode.KeypadEnter || @event.character == '\n')
             {
-                SendTextFromConsole(_instance._consoleInput.text);
+                SendTextFromConsole(_consoleInput.text);
                 _consoleInput.value = "";
                 @event.StopPropagation();
                 @event.PreventDefault();
@@ -157,7 +165,18 @@ namespace Code.Console.UI
                 ConsoleLogger.SendCommandString(text);
         }
 
-        private VisualElement MakeConsoleLabel()
+        private static VisualElement GetConsoleLabel()
+        {
+            return _labelPool.Get();
+        }
+
+        private static void ReleaseConsoleLabel(VisualElement element)
+        {
+            _labelPool.Release(element);
+            (element as Label).text = "";
+        }
+
+        private static VisualElement MakeConsoleLabel()
         {
             Label label = new Label();
             //label.enableRichText = true;
@@ -165,11 +184,16 @@ namespace Code.Console.UI
             return label;
         }
 
-        private void BindConsoleLabel(VisualElement label, int i)
+        private static void BindConsoleLabel(VisualElement label, int i)
         {
             (label as Label).text = ConsoleOutputStrings[i];
         }
+    }
+}
 
-    
+namespace System.Runtime.CompilerServices
+{
+    internal static class IsExternalInit
+    {
     }
 }

@@ -22,7 +22,7 @@ namespace Code.Console
     }
 
     [AttributeUsage(AttributeTargets.Method, Inherited = false)]
-    sealed class CommandOverloadedAttribute : Attribute
+    public sealed class CommandOverloadedAttribute : Attribute
     {
     }
 
@@ -96,7 +96,7 @@ namespace Code.Console
         private static readonly Dictionary<Type, ParameterParser> parsers
             = new Dictionary<Type, ParameterParser>();
 
-        internal static void AddParser(MethodInfo methodInfo)
+        public static void AddParser(MethodInfo methodInfo)
         {
             //AddParser(methodInfo.ReturnType, (ParserDelegate) methodInfo.CreateDelegate(typeof(ParserDelegate)));
 
@@ -118,7 +118,7 @@ namespace Code.Console
                     methodInfo.GetCustomAttribute<ParserAttribute>().Strings);
         }
 
-        internal static Object getValue(Type type, string[] input, CommandCallInfo info)
+        public static Object getValue(Type type, string[] input, CommandCallInfo info)
         {
             if (parsers.ContainsKey(type))
             {
@@ -128,7 +128,7 @@ namespace Code.Console
             throw new CommandParseException($"Type could not be parsed: {type.Name}");
         }
 
-        internal static int GetLength(Type type)
+        public static int GetLength(Type type)
         {
             if (parsers.ContainsKey(type))
                 return parsers[type].length;

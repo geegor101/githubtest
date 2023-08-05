@@ -34,10 +34,10 @@ namespace Code
             float zeta = context.ViscousDampingCoefficient / (2 * Mathf.Sqrt(mass * context.SpringConstant));
             return - mass * (2 * zeta * velocity * w_0 + w_0 * w_0 * x);
             
-            return -1 * deltaTime * (context.SpringConstant * x + context.ViscousDampingCoefficient * velocity);
+            //return -1 * deltaTime * (context.SpringConstant * x + context.ViscousDampingCoefficient * velocity);
         }
 
-        public static float CalculateSpringFromCtx(float pos, float velocity, SpringCtx ctx) =>
+        public static float CalculateSpringForceFromCtx(float pos, float velocity, SpringCtx ctx) =>
             -ctx.Mass * (2 * ctx.DampingRatio * ctx.UndampedAngularFreq * velocity
                          + ctx.UndampedAngularFreq * ctx.UndampedAngularFreq * (pos - ctx.Length));
 

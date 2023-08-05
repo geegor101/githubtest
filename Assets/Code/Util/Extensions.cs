@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using UnityEngine;
+using Object = UnityEngine.Object;
 
 namespace Code
 {
@@ -17,6 +18,12 @@ namespace Code
         public static Vector3 Add(this Vector3 start, Vector3 destination)
         {
             return new Vector3(start.x + destination.x, start.y + destination.y, start.y + destination.y);
+        }
+
+        public static void IfEnabled<T>(this T unityObject, Action<T> consumer) where T : MonoBehaviour
+        {
+            if (unityObject.isActiveAndEnabled)
+                consumer.Invoke(unityObject);
         }
     }
 }

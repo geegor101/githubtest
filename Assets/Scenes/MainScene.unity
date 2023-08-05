@@ -1378,6 +1378,11 @@ Transform:
   m_Father: {fileID: 0}
   m_RootOrder: 9
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!4 &2105539752 stripped
+Transform:
+  m_CorrespondingSourceObject: {fileID: 2218008077684273995, guid: 22a267e5734ecc045a27882fce68777f, type: 3}
+  m_PrefabInstance: {fileID: 5201552463153840391}
+  m_PrefabAsset: {fileID: 0}
 --- !u!1001 &5201552463153840391
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -1434,6 +1439,10 @@ PrefabInstance:
       propertyPath: _scenePathHash
       value: 83102251
       objectReference: {fileID: 0}
+    - target: {fileID: 5602687670421390529, guid: 22a267e5734ecc045a27882fce68777f, type: 3}
+      propertyPath: _graphicalObject
+      value: 
+      objectReference: {fileID: 2105539752}
     - target: {fileID: 5602687670421390529, guid: 22a267e5734ecc045a27882fce68777f, type: 3}
       propertyPath: <SceneId>k__BackingField
       value: 356921451113976663

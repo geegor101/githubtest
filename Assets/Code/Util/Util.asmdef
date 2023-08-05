@@ -1,14 +1,12 @@
 {
-    "name": "GeneralScripts",
+    "name": "Util",
     "rootNamespace": "",
     "references": [
-        "GUID:7c88a4a7926ee5145ad2dfa06f454c67",
-        "GUID:75469ad4d38634e559750d17036d5f7c",
-        "GUID:8ee08fcad3444894a2964683e63c50eb"
+        "GUID:7c88a4a7926ee5145ad2dfa06f454c67"
     ],
     "includePlatforms": [],
     "excludePlatforms": [],
-    "allowUnsafeCode": true,
+    "allowUnsafeCode": false,
     "overrideReferences": false,
     "precompiledReferences": [],
     "autoReferenced": true,

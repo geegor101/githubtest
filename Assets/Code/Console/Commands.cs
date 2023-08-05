@@ -1,6 +1,5 @@
 ﻿using FishNet;
 using FishNet.Managing.Statistic;
-using Managers;
 using UnityEngine;
 
 namespace Code.Console
@@ -47,10 +46,6 @@ namespace Code.Console
                     Debug.LogWarning("Starting host: ");
                     InstanceFinder.ServerManager.StartConnection();
                     InstanceFinder.ClientManager.StartConnection();
-
-                    //TODO: REMOVE
-                    //(new ConsoleLogger.ChatChannel("a")).Connections.Add(InstanceFinder.ClientManager.Connection);
-
                     break;
                 default:
                     Debug.LogWarning("Invalid start location");
@@ -93,12 +88,12 @@ namespace Code.Console
         }
 
 #if UNITY_INCLUDE_TESTS
-        public static bool testPassed = false;
+        public static int testPassed = 0;
 
         [Command("unittest", true, true)]
         public static void UnitTestCommand(string str, [CommandParameterLength(3)] int[] ints, CommandCallInfo info)
         {
-            testPassed = str.Equals("str") && ints[2] == 5;
+            testPassed = str.Equals("str") && ints[2] == 5 ? 1 : 2;
         }
 #endif
 
@@ -107,6 +102,7 @@ namespace Code.Console
         {
             if (info.conn != null)
                 Debug.Log($"ID: {info.conn.ClientId}");
+            Debug.Log("Who do you think you are???");
             //InstanceFinder.StatisticsManager.NetworkTraffic.OnClientNetworkTraffic
         }
 

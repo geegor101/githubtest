@@ -1,8 +1,10 @@
-﻿using System.Diagnostics;
+﻿using System;
+using System.Diagnostics;
 using System.Threading.Tasks;
 using Code;
 using Code.Console;
 using Code.Console.UI;
+using Code.Networking;
 using FishNet;
 using FishNet.Managing;
 using FishNet.Managing.Statistic;
@@ -22,30 +24,30 @@ namespace Managers
         private enum Startup { SERVER, CLIENT, HOST, NONE }
         [SerializeField] private Startup _startup = Startup.NONE;
 
-        private static NetworkTrafficArgs _serverArgs;
-        private static NetworkTrafficArgs _clientArgs;
+        
 
-        private void Start()
+        private void OnEnable()
         {
-            Stopwatch stopwatch = Stopwatch.StartNew();
             this.AutofillAttributes();
             _instance = this;
             Application.logMessageReceived += UIManager.LOG;
+            Debug.Log("Loading started");
+            Stopwatch stopwatch = Stopwatch.StartNew();
+            //UnityEngine.Device.Application.logMessageReceived += UIManager.LOG;
+            
             ConsoleLogger.Initialize();
             RPCSender.initializePackets();
             InputManager.Init(_inputActionAsset);
             InitNetworking();
+            NetworkThroughputUtil.Initialize();
             InitActions();
+            
             stopwatch.Stop();
             Debug.Log($"Loading finished in : {stopwatch.Elapsed}");
         }
 
         private static void InitNetworking()
         {
-            
-            InstanceFinder.StatisticsManager.NetworkTraffic.OnClientNetworkTraffic += args => _clientArgs = args;
-            InstanceFinder.StatisticsManager.NetworkTraffic.OnServerNetworkTraffic += args => _serverArgs = args;
-
             switch (_instance._startup)
             {
                 case Startup.HOST :
@@ -63,11 +65,7 @@ namespace Managers
             }
         }
 
-        public static void GetTrafficArgs(out NetworkTrafficArgs? serverArgs, out NetworkTrafficArgs? clientArgs)
-        {
-            serverArgs = _serverArgs;
-            clientArgs = _clientArgs;
-        }
+        
 
         private void InitActions()
         {
