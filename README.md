@@ -8,6 +8,7 @@ The approach we took was creating a reversed dating simulator where instead of t
 There's 2 different girlfriends you can go against:
 1. Perfect girlfriend
 2. Toxic girlfriend
+
 You have 16 different combos you can try to use based on what your ACTIONS and WORDS are. However, trying to use the same combos might not get you the same result... so spamming isn't everything! Just say and do the right things in given situations to make her want to break up with you ¯\_(ツ)_/¯
 ## Concept Art / Finalized art
 Check out the art behind the scenes!
